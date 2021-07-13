@@ -1,0 +1,145 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+
+}
+<script type="text/C#" runat="server">
+    [WebMethod]
+    public static string SayHello(string name)
+    {
+    return "Hello " + name;
+    }
+</script>
+
+<h1>Razor Pages AJAX with Named Handlers Demo</h1>
+
+<form method="post">
+    <div class="form-row">
+        <div class="col-md-6">
+            <label asp-for="SelectedContinent">
+                Continent
+            </label>
+            <select id="continentsList" class="form-control" asp-for="SelectedContinent" asp-items="@Model.Continents"></select>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="SelectedCountry">
+                Country
+            </label>
+            <select id="countriesList" class="form-control" asp-for="SelectedCountry" asp-items="@Model.Countries"></select>
+        </div>
+        <div id="tags" class="taginput" contenteditable="true">
+
+        </div>
+    </div>
+</form>
+@section Scripts
+{
+    <script type="text/javascript">
+        $("#continentsList").change(function () {
+            var continent = $("#continentsList").val();
+            $.ajax({
+                url: "@Url.Page("/Index")?handler=CountriesFilter",
+                method: "GET",
+                data: { continent: continent },
+                success: function (data) {
+                    //Remove all items in the countriesList
+                    $("#countriesList option").remove();
+                    //For each item retrieved in the AJAX call...
+                    $.each(data, function (index, itemData) {
+                        //...append that item to the countriesList
+                        $("#countriesList").append("<option value='" + itemData + "'>" + itemData + "</option>");
+                    });
+                }
+            })
+        });
+
+        $(function () {
+            var availableTags = [
+                "ActionScript",
+                "AppleScript",
+                "Asp",
+                "BASIC",
+                "C",
+                "C++",
+                "Clojure",
+                "COBOL",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "Groovy",
+                "Haskell",
+                "Java",
+                "JavaScript",
+                "Lisp",
+                "Perl",
+                "PHP",
+                "Python",
+                "Ruby",
+                "Scala",
+                "Scheme"
+            ];
+
+
+            function placeCaretAtEnd(el) {
+                el.focus();
+                if (typeof window.getSelection != "undefined"
+                    && typeof document.createRange != "undefined") {
+                    var range = document.createRange();
+                    range.selectNodeContents(el);
+                    range.collapse(false);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else if (typeof document.body.createTextRange != "undefined") {
+                    var textRange = document.body.createTextRange();
+                    textRange.moveToElementText(el);
+                    textRange.collapse(false);
+                    textRange.select();
+                }
+            }
+
+
+            function split(val) {
+                return val.split(/ \s*/);
+            }
+            function extractLast(term) {
+                return split(term).pop();
+            }
+
+            $("#tags")
+                // don't navigate away from the field on tab when selecting an item
+                .bind("keydown", function (event) {
+                    if (event.keyCode === $.ui.keyCode.TAB &&
+                        $(this).data("ui-autocomplete").menu.active) {
+                        event.preventDefault();
+                    }
+                })
+                .autocomplete({
+                    minLength: 0,
+                    source: function (request, response) {
+                        // delegate back to autocomplete, but extract the last term
+                        response($.ui.autocomplete.filter(
+                            availableTags, extractLast(request.term)));
+                    },
+                    focus: function () {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+
+                    select: function (event, ui) {
+                        var value = $(this).html();
+                        var terms = split(value);
+                        terms.pop();
+                        terms.push(ui.item.value);
+                        $(this).html(terms + ", ");
+                        placeCaretAtEnd(this);
+
+                        return false;
+                    }
+                });
+        }); 
+    </script>
+
+
+}

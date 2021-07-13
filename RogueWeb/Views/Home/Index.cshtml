@@ -1,0 +1,375 @@
+﻿@page
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    /* Remove default bullets */
+    ul, #myUL {
+        list-style-type: none;
+    }
+
+    /* Remove margins and padding from the parent ul */
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .caret {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+        transform: rotate(90deg);
+    }
+
+    /* Hide the nested list */
+    .nested {
+        display: none;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+        display: block;
+    }
+</style>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 14px;
+        line-height: 1.5;
+        color: #24292e;
+    }
+
+    .ui-widget {
+        font-family: inherit;
+        font-size: inherit;
+    }
+
+    div#MyText {
+        font-family: inherit;
+        font-size: inherit;
+        width: 60%;
+        background-color: #ECF0F1;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+        padding: 8px;
+    }
+
+    .ui-menu {
+        margin: 0;
+        padding: 0;
+        top: 0;
+        background-color: #FFFFFF;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .ui-menu-item-wrapper {
+        display: block;
+        padding: 4px 6px;
+    }
+
+        .ui-menu-item-wrapper:hover,
+        .ui-state-active {
+            background-color: #34495E;
+            color: #FFFFFF;
+            cursor: pointer;
+        }
+
+    .ui-helper-hidden-accessible {
+        display: qnone;
+    }
+
+    .ui-helper-hidden-accessible {
+        padding: 4px 0 0 0;
+        font-size: smaller;
+    }
+</style>
+<script>
+    function GenericClick(val) {
+        //alert(val);
+        //window.location = "www.google.com";
+        document.getElementById('rogueClickInfo').value = val;
+        //window.alert(val);
+        document.getElementById("rogueForm").submit();
+        event.stopPropagation();
+    }
+</script>
+<script>
+    function GenericDivContents(id) {
+        //var ll = document.getElementById
+        //window.location = "www.google.com";
+        //var contentDiv = $("#" + id).html();
+        var contenteditable = document.querySelector('[contenteditable]'),
+            text = contenteditable.textContent;
+        text = "'" + text + "'";
+        //var ce = $("<pre />").html($("#" + id).html());
+        //if ($.browser.webkit)
+        //    ce.find("div").replaceWith(function () { return "\n" + this.innerHTML; });
+        //if ($.browser.msie)
+        //    ce.find("p").replaceWith(function () { return this.innerHTML + "<br>"; });
+        //if ($.browser.mozilla || $.browser.opera || $.browser.msie)
+        //    ce.find("br").replaceWith("\n");
+
+        //var textWithWhiteSpaceIntact = ce.text();
+        //var ce = $("<pre />").html($("#" + id).html());
+        //if ($.browser.webkit)
+        //    ce.find("div").replaceWith(function () { return "\n" + this.innerHTML; });
+        //if ($.browser.msie)
+        //    ce.find("p").replaceWith(function () { return this.innerHTML + "<br>"; });
+        //if ($.browser.mozilla || $.browser.opera || $.browser.msie)
+        //    ce.find("br").replaceWith("\n");
+
+        //var textWithWhiteSpaceIntact = ce.text();
+        //alert("from div" + textWithWhiteSpaceIntact);
+        GenericClick("SETQUERY_8457*8494=" + text);
+
+        //val = contentDiv.innerHTML;
+        //document.getElementById('rogueClickInfo').value = val;
+        //window.alert(val);
+        //document.getElementById("rogueForm").submit();
+        //event.stopPropagation();
+    }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<form method="post" id="rogueForm" name="rogueForm" style="height:100%;width:100%">
+    <input type="text" Name="rogueClickInfo" id="rogueClickInfo" style="display:none;" />
+    @*<div id="myDiv"></div>*@
+    @*@using rogueCore.rogueUIV3.web;
+        @{ UIWebPage pageBuilder = new UIWebPage(7550);}*@
+    @Html.Raw(@ViewData["MYHTML"])
+    <div name="SIDEMENU" id="SIDEMENU"></div>
+    @*@Html.Raw(IndexModel.pageBuilder.BuildHTML())*@
+</form>
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+    $(function () {
+        LoadData();
+    });
+        function LoadData() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const urlPath = urlParams.get('Path');
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetSection")',
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: { urlPath: urlPath},
+            success: function (data) {
+                JsonToHTML(data);
+                var toggler = document.getElementsByClassName("caret");
+                var i;
+                for (i = 0; i < toggler.length; i++) {
+                    toggler[i].addEventListener("click", function () {
+                        this.parentElement.querySelector(".nested").classList.toggle("active");
+                        this.classList.toggle("caret-down");
+                    });
+                }
+            },
+            error: function (ex) {
+                var r = jQuery.parseJSON(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+        return false;
+    }
+    function JsonToHTML(jsonStr) {
+        let obj = JSON.parse(jsonStr);
+        Object.entries(obj).forEach(([key, value]) => {
+                var myArray = [];
+                myArray.push(new NullElement());
+                JsonLooper(value, '', myArray);
+                let htm2 = HTMLLooper(myArray[0], '');
+                document.getElementById("SIDEMENU").innerHTML = htm2;
+        });
+    }
+    function HTMLLooper(topControl, html) {
+        html += topControl.StartText();
+        for (let i = 0; i < topControl.childElements.length; i++) {
+            html = HTMLLooper(topControl.childElements[i], html);
+        }
+        html += topControl.endTag;
+        return html;
+    }
+    function JsonLooper(obj, htm, controls) {
+        Object.entries(obj).forEach(([key, value]) => {
+            if ((typeof value === 'string' || value instanceof String)) { }
+            else if (Array.isArray(value)) {
+                htm = JsonLooper(value, htm, controls);
+            }
+            else {
+                let itemType = new String(value["PARENTRELATION"].toUpperCase());
+                let isControl = false;
+                var endTag = '';
+                if (itemType.normalize() === "ATTRIBUTE") {
+                    isControl = false;
+                    var attNm = new String(value["ATTRIBUTETYPE"]);
+                    var attVal = new String(value["ATTRIBUTEVALUE"]);
+                    item = TranslateToAttribute(attNm, attVal);
+                    endTag = '';
+                    controls[controls.length - 1].AddAtt(item);
+                }
+                else
+                {
+                    isControl = true;
+                    var controlNM = new String(value["CONTROLNAME"]);
+                    var myControl = TranslateToControl(controlNM);
+                    if (itemType.normalize() === "HEADER") {
+                       controls[controls.length - 1].headerElements.push(myControl);
+                    } else {
+                        controls[controls.length - 1].childElements.push(myControl);
+                    }
+                    controls.push(myControl);
+                    endTag = myControl.endTag;
+                }
+                htm = JsonLooper(value, htm, controls);
+                if (isControl) {
+                       let str = myControl.StartText();
+                       htm = str + htm + myControl.endTag;
+                       controls.pop();
+                }
+            }
+        });
+        return htm;
+    }
+    function GroupParser(obj) {
+        let itemType = new String(obj["PARENTRELATION"].toUpperCase());
+        if (itemType.normalize() === "ATTRIBUTE") {
+           var attNm = new String(obj["ATTRIBUTETYPE"]);
+           var attVal = new String(obj["ATTRIBUTEVALUE"]);
+           return  TranslateToAttribute(attNm, attVal);
+        } else {
+             var controlNM = new String(obj["CONTROLNAME"]);
+             return TranslateToControl(controlNM);
+        }
+    }
+    </script>
+    <script>
+                var tags = [
+                'Alaska',
+                'Asia / Far East',
+                'Baltic Capitals / Northern Europe',
+                'Canary Islands',
+                'Caribbean',
+                'Cruise from Ireland',
+                'Dubai &amp; The Emirates',
+                'Grand Voyages / Repositioning Cruises',
+                'Mediterranean',
+                'Northern Lights',
+                'Norwegian Fjords',
+                'South America',
+                'Transatlantic',
+                'UK &amp; Ireland',
+                ];
+                var startTyping = "Start typing...";
+
+            function placeCaretAtEnd(el) {
+                    el.focus();
+                if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+                    var range = document.createRange();
+                    range.selectNodeContents(el);
+                    range.collapse(false);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else if (typeof document.body.createTextRange != "undefined") {
+                    var textRange = document.body.createTextRange();
+                    textRange.moveToElementText(el);
+                    textRange.collapse(false);
+                    textRange.select();
+                }
+            }
+            $("#8457_8494").bind("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active) {
+                    event.preventDefault();
+                }
+            }).autocomplete({
+                    minLength: 0,
+                source: function (request, response) {
+                    var term = request.term,
+                        results = [];
+                        $.ajax({
+                            url: "@Url.Page("/Index")?handler=HQLFilter",
+                            method: "GET",
+                            async: false,
+                            data: { startStr: term },
+                            success: function (data) {
+                                //results = $.ui.autocomplete.filter(data, term);
+                                //window.confirm("Checking + " + term);
+                                $.each(data, function (index, itemData) {
+                                    results.push(itemData);
+                                });
+                                //if (/\s+$/.test(term)) {
+                                //    window.confirm("ends in space");
+                                //}
+                                //window.confirm(term);
+                                //    results.push(itemData);
+                                //});
+                            }
+                        })
+                    //} else {
+                    //results = [startTyping];
+                    //}
+                    response(results);
+                },
+                focus: function () {
+                    return false;
+                },
+                select: function (event, ui) {
+                    if (ui.item.value !== startTyping) {
+                        var value = $(this).html();
+                        window.confirm("In term eval: " + value);
+                        var terms = [value];
+                        terms.pop();
+                        terms.push(ui.item.value);
+                        $(this).html(terms);
+                        placeCaretAtEnd(this);
+                    }
+                    return false;
+                }
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                if (item.label != startTyping) {
+                    return $("<li></li>")
+                        .data("item.autocomplete", item)
+                        .append("<a><div>" + item.label + "</div></div></a>")
+                .appendTo(ul);
+                } else {
+                return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append("<a>" + item.label + "</a>")
+                    .appendTo(ul);
+            }
+            };
+
+    </script>
+}
+<script>
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function () {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+        });
+    }
+</script>
+

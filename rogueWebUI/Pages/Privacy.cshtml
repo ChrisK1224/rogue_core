@@ -1,0 +1,128 @@
+﻿@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<style>
+    div {
+        min-height: 25px;
+        width: 60%;
+        background: lightyellow;
+        box-shadow: 1px 1px 2px 2px darkgrey;
+    }
+</style>
+
+
+<div id="tags" class="taginput" contenteditable="true" tabindex="1"></div>
+
+<script>
+    $(function () {
+        var availableTags = [
+            "ActionScript",
+            "AppleScript",
+            "Asp",
+            "BASIC",
+            "C",
+            "C++",
+            "Clojure",
+            "COBOL",
+            "ColdFusion",
+            "Erlang",
+            "Fortran",
+            "Groovy",
+            "Haskell",
+            "Java",
+            "JavaScript",
+            "Lisp",
+            "Perl",
+            "PHP",
+            "Python",
+            "Ruby",
+            "Scala",
+            "Scheme"
+        ];
+
+
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection != "undefined"
+                && typeof document.createRange != "undefined") {
+                var range = document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (typeof document.body.createTextRange != "undefined") {
+                var textRange = document.body.createTextRange();
+                textRange.moveToElementText(el);
+                textRange.collapse(false);
+                textRange.select();
+            }
+        }
+
+
+        function split(val, splitter) {
+
+            return val.split("/" & splitter & "\s*/");
+        }
+        function extractLast(term) {
+            return split(term).pop();
+        }
+
+        $("#tags")
+            // don't navigate away from the field on tab when selecting an item
+            .bind("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+                    $(this).data("ui-autocomplete").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                minLength: 0,
+                source: function (request, response) {
+                    // delegate back to autocomplete, but extract the last term
+                    response($.ui.autocomplete.filter(
+                        availableTags, extractLast(request.term)));
+                },
+                focus: function () {
+                    // prevent value inserted on focus
+                    return false;
+                },
+
+                select: function (event, ui) {
+                    var value = $(this).html();
+                    var terms = split(value);
+                    terms.pop();
+                    terms.push(ui.item.value);
+                    $(this).html(terms + ". ");
+                    placeCaretAtEnd(this);
+
+                    return false;
+                }
+
+
+
+            });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Add the page method call as an onclick handler for the div.
+        $("#Result").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "Privacy.aspx/GetDate",
+                data: { someParameter: "some value" },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    // Replace the div's content with the page method's return.
+                    $("#Result").text(msg.d);
+                }
+            });
+        });
+    });
+</script>

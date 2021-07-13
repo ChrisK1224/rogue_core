@@ -1,0 +1,19 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using RapidHQLWeb.Models
+@model RapidHQLWeb.Pages.MapLargeDownloadModel
+@{
+}
+<table>
+    <tr>
+        <th>File Name</th>
+        <th></th>
+    </tr>
+    @foreach (FileModel file in Model.Files)
+    {
+        <tr>
+            <td>@file.FileName</td>
+            <td><a href="@Url.Page("MapLargeDownload", "DownloadFile", new { fileName = file.FileName })">Download</a></td>
+        </tr>
+    }
+</table>

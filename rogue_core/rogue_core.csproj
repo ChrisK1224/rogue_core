@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Configurations>Debug;Release;ConsoleDebug</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="rogueCore\hqlSyntaxV2\**" />
+    <Compile Remove="rogueCore\hqlSyntax\**" />
+    <Compile Remove="rogueCore\hql\**" />
+    <Compile Remove="rogueCore\rogueUIV2\**" />
+    <Compile Remove="rogueCore\rogueUI\**" />
+    <EmbeddedResource Remove="rogueCore\hqlSyntaxV2\**" />
+    <EmbeddedResource Remove="rogueCore\hqlSyntax\**" />
+    <EmbeddedResource Remove="rogueCore\hql\**" />
+    <EmbeddedResource Remove="rogueCore\rogueUIV2\**" />
+    <EmbeddedResource Remove="rogueCore\rogueUI\**" />
+    <None Remove="rogueCore\hqlSyntaxV2\**" />
+    <None Remove="rogueCore\hqlSyntax\**" />
+    <None Remove="rogueCore\hql\**" />
+    <None Remove="rogueCore\rogueUIV2\**" />
+    <None Remove="rogueCore\rogueUI\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GroupDocs.Classification" Version="21.1.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.17" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Json" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="rogueCore\hqlSyntaxV3\segments\from\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\files_and_folders\files_and_folders\files_and_folders.csproj" />
+  </ItemGroup>
+
+</Project>

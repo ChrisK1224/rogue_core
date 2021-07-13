@@ -1,0 +1,291 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<head>
+    <script src="~/js/HTMLTranslator.js"></script>
+    <script src="~/js/HTMLControls.js"></script>
+    <script src="~/js/HTMLAttributes.js"></script>
+    <style>
+        /* Remove default bullets */
+        ul, #myUL {
+            list-style-type: none;
+        }
+
+        /* Remove margins and padding from the parent ul */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the caret/arrow */
+        .caret {
+            cursor: pointer;
+            user-select: none;
+            /* Prevent text selection */
+        }
+            /* Create the caret/arrow with a unicode, and style it */
+            .caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        /* Hide the nested list */
+        .nested {
+            display: none;
+        }
+
+        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+        .active {
+            display: block;
+        }
+    </style>
+    <style>
+        .leftnav {
+            z-index: 1;
+            top: 100px;
+            left: 10px;
+            overflow-x: scroll;
+            padding: 8px 0;
+        }
+
+        .rightnav {
+            z-index: 1;
+            top: 150px;
+            right: 10px;
+            overflow-x: scroll;
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <form id="rogueClickInfo" name="rogueClickInfo" method="post">
+        @*<input type="text" id="pageID" asp-for="pageID" value="@Model.pageID" name="pageID"  />*@
+        <div  id="RogueMetaData" style="display:none" name="RogueMetaData"></div>
+        <div style="height:100%;width:100%;">
+            <div style="display:table;width:100%;">
+                <div style="display:table-row;height:125px;">
+                    <div style="display:table-cell;" id="PAGEHEADER" Name="PAGEHEADER"></div>
+                </div>
+                <div style="display:table-row;">
+                    <div style="display:table-cell;">
+                        <div style="display:table;margin-top:-5px;">
+                            <div style="display:table-row;">
+                                <div class="leftnav" style="display:table-cell;padding:15px;width:20%;background-color:#97CAEF;" id="SIDEMENU" Name="SIDEMENU"></div>
+                                <div style="display:table-cell;width:70%;">
+                                    <div style="height:100%;width:100%;display:table;">
+                                        <div style="display:table-row;">
+                                            <div style="display:table-cell;width:100%;">
+                                                <div id="BODYHEADER" Name="BODYHEADER"></div>
+                                            </div>
+                                        </div>
+                                        <div style="display:table-row;">
+                                            <div style="display:table-cell;width:100%;">
+                                                <div id="BODYSECTION1" Name="BODYSECTION1"></div>
+                                            </div>
+                                        </div>
+                                        <div style="display:table-row;">
+                                            <div style="display:table-cell;width:100%;">
+                                                <div id="BODYSECTION2" Name="BODYSECTION2"></div>
+                                            </div>
+                                        </div>
+                                        <div style="display:table-row;">
+                                            <div style="display:table-cell;width:100%;">
+                                                <div id="BODYSECTION3" Name="BODYSECTION3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="RIGHTSIDEMENU" NAME="RIGHTSIDEMENU" class="rightnav" style="display:table-cell;width:10%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+@section Scripts
+{
+    <script type="text/javascript">
+        function GenericClick(val) {            
+            event.stopPropagation();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ClickEvent")',
+                dataType: 'json',
+                data: { clickInfo: val,  frmData: JSON.stringify($('#rogueClickInfo').serialize())},
+                success: function (data) {
+                JsonToHTML(data);
+                var toggler = document.getElementsByClassName("caret");
+                var i;
+                for (i = 0; i < toggler.length; i++) {
+                    toggler[i].addEventListener("click", function () {
+                        this.parentElement.querySelector(".nested").classList.toggle("active");
+                        this.classList.toggle("caret-down");
+                    });
+                }
+            },
+            error: function (ex) {
+                var r = jQuery.parseJSON(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+        return false;
+        }
+    </script>
+    <script type="text/javascript">
+    $(function () {
+            LoadData('SIDEMENU');
+    });
+    function LoadData(sectionID) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const urlPath = urlParams.get('Path');
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetSection")',
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: { sectionNM: sectionID},
+            success: function (data) {
+                JsonToHTML(data, sectionID);
+                var toggler = document.getElementsByClassName("caret");
+                var i;
+                for (i = 0; i < toggler.length; i++) {
+                    toggler[i].addEventListener("click", function () {
+                        this.parentElement.querySelector(".nested").classList.toggle("active");
+                        this.classList.toggle("caret-down");
+                    });
+                }
+            },
+            error: function (ex) {
+                var r = jQuery.parseJSON(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+        return false;
+    }
+    function JsonToHTML(jsonStr, sectionID) {
+        let obj = JSON.parse(jsonStr);
+        Object.entries(obj).forEach(([key, value]) => {
+            var myArray = [];
+                myArray.push(new NullElement());
+                JsonLooper(value, '', myArray);
+            let htm2 = HTMLLooper(myArray[0], '');
+                document.getElementById(key).innerHTML = htm2;
+        });
+    }
+    function HTMLLooper(topControl, html) {
+        html += topControl.StartText();
+        for (let i = 0; i < topControl.childElements.length; i++) {
+            html = HTMLLooper(topControl.childElements[i], html);
+        }
+        html += topControl.endTag;
+        return html;
+        }
+    function JsonLooper(obj, htm, controls) {
+            Object.entries(obj).forEach(([key, value]) => {
+                if ((typeof value === 'string' || value instanceof String)) { }
+                else if (Array.isArray(value)) {
+                    htm = JsonLooper(value, htm, controls);
+                }
+                else {
+                    let controlNM = value["1"];
+                    let controlVal = value["2"];
+                    let myControl = TranslateToControl(controlNM, controlVal);
+                    let isControl = myControl.isControl;
+                    if (!isControl) {
+                        controls[controls.length - 1].AddAtt(myControl);
+                    }
+                    else {
+                        if (typeof controlVal === 'undefined') { controlVal = '';}
+                        if (controlVal.normalize() === "HEADER") {
+                            controls[controls.length - 1].headerElements.push(myControl);
+                        } else {
+                            controls[controls.length - 1].childElements.push(myControl);
+                        }
+                        controls.push(myControl);
+                        endTag = myControl.endTag;
+                    }
+                    htm = JsonLooper(value, htm, controls);
+                    if (isControl) {
+                        let str = myControl.StartText();
+                        htm = str + htm + myControl.endTag;
+                        controls.pop();
+                    }
+                }
+            });
+            return htm;
+        }
+    //function JsonLooper(obj, htm, controls) {
+    //    Object.entries(obj).forEach(([key, value]) => {
+    //        if ((typeof value === 'string' || value instanceof String)) { }
+    //        else if (Array.isArray(value)) {
+    //            htm = JsonLooper(value, htm, controls);
+    //        }
+    //        else {
+    //            let relType = value["PARENTRELATION"];
+    //            var itemType;
+    //            if (relType) {
+    //                itemType = new String(value["PARENTRELATION"].toUpperCase());
+    //            }else {
+    //                itemType = "CHILD";
+    //            }
+    //            let isControl = false;
+    //            var endTag = '';
+    //            if (itemType.normalize() === "ATTRIBUTE") {
+    //                isControl = false;
+    //                var attNm = new String(value["ATTRIBUTETYPE"]);
+    //                var attVal = new String(value["ATTRIBUTEVALUE"]);
+    //                item = TranslateToAttribute(attNm, attVal);
+    //                endTag = '';
+    //                controls[controls.length - 1].AddAtt(item);
+    //            }
+    //            else
+    //            {
+    //                isControl = true;
+    //                var controlNM = new String(value["CONTROLNAME"]);
+    //                var myControl = TranslateToControl(controlNM);
+    //                if (itemType.normalize() === "HEADER") {
+    //                   controls[controls.length - 1].headerElements.push(myControl);
+    //                } else {
+    //                    controls[controls.length - 1].childElements.push(myControl);
+    //                }
+    //                controls.push(myControl);
+    //                endTag = myControl.endTag;
+    //            }
+    //            htm = JsonLooper(value, htm, controls);
+    //            if (isControl) {
+    //                   let str = myControl.StartText();
+    //                   htm = str + htm + myControl.endTag;
+    //                   controls.pop();
+    //            }
+    //        }
+    //    });
+    //    return htm;
+    //}
+    //function GroupParser(obj) {
+    //    let itemType = new String(obj["PARENTRELATION"].toUpperCase());
+    //    if (itemType.normalize() === "ATTRIBUTE") {
+    //       var attNm = new String(obj["ATTRIBUTETYPE"]);
+    //       var attVal = new String(obj["ATTRIBUTEVALUE"]);
+    //       return  TranslateToAttribute(attNm, attVal);
+    //    } else {
+    //         var controlNM = new String(obj["CONTROLNAME"]);
+    //         return TranslateToControl(controlNM);
+    //    }
+    //}
+    </script>
+}

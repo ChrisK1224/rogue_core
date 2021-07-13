@@ -1,0 +1,22 @@
+﻿<Window x:Class="wpfTemplate.UIConstructor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfTemplate"
+        mc:Ignorable="d"
+        Title="UIConstructor" Height="450" Width="800">
+    <StackPanel>
+        <StackPanel Name="mainStack">
+            <Button Name="btnAddToRoot" Click="BtnAddToRoot_Click" Content="Add Control To Root"></Button>
+            <TreeView Name="mainTree"></TreeView>
+        </StackPanel>
+        <StackPanel>
+            <Button Name="btnCreateQry" Content="Create Query" Click="BtnCreateQry_Click"></Button>
+            <Button Name="btnRunUIQry" Content="Run UI" Click="BtnRunUIQry_Click"></Button>
+            <TextBox Name="txtQuery" TextWrapping="Wrap"
+  AcceptsReturn="True" Height="72"></TextBox>
+        </StackPanel>
+        <StackPanel Name="uiTestPanel"></StackPanel>
+    </StackPanel>
+</Window>
