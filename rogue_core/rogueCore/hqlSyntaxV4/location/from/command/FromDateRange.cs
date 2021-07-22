@@ -1,4 +1,5 @@
-﻿using rogue_core.rogueCore.binary;
+﻿using FilesAndFolders;
+using rogue_core.rogueCore.binary;
 using rogue_core.rogueCore.id.rogueID;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from.command
         }
         protected override IEnumerable<IReadOnlyRogueRow> RunProcedure(IMultiRogueRow parentRow)
         {
-            DateTime baseDate = DateTime.Parse(commandParams[0].GetValue(parentRow.tableRefRows));
-            string diffType = commandParams[1].GetValue(parentRow.tableRefRows);
-            double diffNum = double.Parse(commandParams[2].GetValue(parentRow.tableRefRows));
-            int interval = int.Parse(commandParams[3].GetValue(parentRow.tableRefRows));
+            DateTime baseDate = DateTime.Parse(commandParams[0].GetValue(parentRow.tableRefRows.ToSingleEnum()));
+            string diffType = commandParams[1].GetValue(parentRow.tableRefRows.ToSingleEnum());
+            double diffNum = double.Parse(commandParams[2].GetValue(parentRow.tableRefRows.ToSingleEnum()));
+            int interval = int.Parse(commandParams[3].GetValue(parentRow.tableRefRows.ToSingleEnum()));
             int currInterval = 0;
             DateTime finalDate;
             var firstRow = new ManualBinaryRow();

@@ -22,11 +22,12 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column
             columnRowID = (this.IsDirectID(colTxt)) ? new ColumnRowID(this.GetDirectID(colTxt)) : metaData.GetColumnByParentAndColName(colTableRefName, periodParts[periodParts.Count -1]);
             columnName = (base.GetAliasName() == "") ? BinaryDataTable.columnTable.GetColumnNameByID(columnRowID) : base.GetAliasName();
         }
-        public virtual string RetrieveStringValue(Dictionary<string, IReadOnlyRogueRow> parentRows)
+        public virtual string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> parentRows)
         {
-            if (parentRows.ContainsKey(upperColTableRefName))
+            var parentRow = parentRows.First();
+            if (parentRow.ContainsKey(upperColTableRefName))
             {
-                return parentRows[upperColTableRefName].ITryGetValueByColumn(columnRowID);
+                return parentRow[upperColTableRefName].ITryGetValueByColumn(columnRowID);
             }
             else
             {

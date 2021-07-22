@@ -1,6 +1,7 @@
 ﻿using rogue_core.rogueCore.binary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
@@ -13,7 +14,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
         {
 
         }
-        public string RetrieveStringValue(Dictionary<string, IReadOnlyRogueRow> rows)
+        public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
             string val = commandParams[0].GetValue(rows);
             if (val.Length > 100)

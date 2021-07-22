@@ -190,6 +190,28 @@ namespace rogue_core.rogueCore.binary.prefilled
             return columns[parentObjectID][colName.ToUpper()].rowID.ToInt();
             //return new HQLQuery(tableColumnQuery.Replace("@PARENTOBJECTID", parentObjectID.ToString()).Replace("@COLNAME", colName)).hierarchyGrid[0].Value.rowID.ToString();
         }
+        public long GetColumnIDByNameAndOwnerIDIfExist(String colName, long parentObjectID)
+        {
+            colName = colName.ToUpper();
+            switch (colName)
+            {
+                case "ROGUECOLUMNID":
+                    return -1012;
+                case "ROGUEDATEADDED":
+                    return -1013;
+                case "ROGUE_VALUE":
+                    return 8619;
+                case "ROGUE_KEY":
+                    return 8676;
+                case "ROGUE_ROW_ID":
+                    return 8637;
+                case "ROGUEVALUE":
+                    return 0;
+            }
+            return (columns[parentObjectID].ContainsKey(colName)) ? columns[parentObjectID][colName].rowID.ToInt() : 0;
+            //return columns[parentObjectID][colName.ToUpper()].rowID.ToInt();
+            //return new HQLQuery(tableColumnQuery.Replace("@PARENTOBJECTID", parentObjectID.ToString()).Replace("@COLNAME", colName)).hierarchyGrid[0].Value.rowID.ToString();
+        }
         public static RecordIO_OID_Row recordIO_OID_Row  = new RecordIO_OID_Row();
         public static Record_Col_OID_Row record_Col_OID_Row = new Record_Col_OID_Row();
         public static RefRecordRow_OID refRecordRow_OID = new RefRecordRow_OID();

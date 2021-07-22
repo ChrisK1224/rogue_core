@@ -12,7 +12,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.select
         public string upperColumnName { get; }
         //public string colTableRefName { get; }
         public void ResetColName(string colName);
-        public string GetValue(Dictionary<string, IReadOnlyRogueRow> tableRefRows);
+        public string GetValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> tableRefRows);
         public ColumnRowID baseColumnID { get; }
     }
 }

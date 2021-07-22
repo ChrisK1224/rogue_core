@@ -28,7 +28,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         }
         public List<IMultiRogueRow> TopRows()
         {
-            return levels[0].rows[0].childRows;
+            return groups[groups.Count-1].levels.First().rows[0].childRows;
         }
         public HQLLevel ParentLevel(string parentName)
         {

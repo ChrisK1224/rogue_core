@@ -45,7 +45,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
                 }
             }
         }
-        public string GetValue(Dictionary<string, IReadOnlyRogueRow> rows)
+        public string GetValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
             return calcGroups[0].RetrieveStringValue(rows);
         }

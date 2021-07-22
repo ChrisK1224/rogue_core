@@ -1,4 +1,5 @@
 ﻿using files_and_folders;
+using FilesAndFolders;
 using rogue_core.rogueCore.binary;
 using rogue_core.rogueCore.binary.word.complex;
 using rogue_core.rogueCore.hqlSyntaxV4.location;
@@ -59,7 +60,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
                 pairRogueRow.AddPair(8676, col.columnName);
                 //**DELTED FOR V4 nned to find effects
                 //pairRogueRow.AddPair(8637, tableRefRows[col.colTableRefName].rowID.ToString());
-                pairRogueRow.AddPair(8619, col.GetValue(tableRefRows));
+                pairRogueRow.AddPair(8619, col.GetValue(tableRefRows.ToSingleEnum()));
                 yield return pairRogueRow;
             }
         }
@@ -71,7 +72,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
         }
         public string GetValue(IColumn col)
         {
-            return col.RetrieveStringValue(tableRefRows);
+            return col.RetrieveStringValue(tableRefRows.ToSingleEnum());
             //* TODO Fix this so that it pulls directly as DecodedRowID this is slow*****
             //return tableRefRows[tableRefName].ITryGetValue(colID).DisplayValue();
         }
@@ -84,7 +85,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
             //{
             if (selectRow.columnsByName.ContainsKey(colName.ToUpper()))
             {
-                return selectRow.columnsByName[colName.ToUpper()].GetValue(tableRefRows);
+                return selectRow.columnsByName[colName.ToUpper()].GetValue(tableRefRows.ToSingleEnum());
             }
             else
             {
@@ -95,12 +96,12 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
         {
             foreach (var col in selectRow.selectColumns)
             {
-                yield return new KeyValuePair<string, string>(col.columnName, col.GetValue(tableRefRows));
+                yield return new KeyValuePair<string, string>(col.columnName, col.GetValue(tableRefRows.ToSingleEnum()));
             }
         }
         public string GetValueAt(int index)
         {
-            return selectRow.selectColumns[index].GetValue(tableRefRows);
+            return selectRow.selectColumns[index].GetValue(tableRefRows.ToSingleEnum());
         }
         public IMultiRogueRow MergeRow(string tableRefName, IReadOnlyRogueRow newRow, List<IMultiRogueRow> levelRows)
         {
@@ -139,8 +140,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
                 retLine += col.columnName;
                 Console.Write(":");
                 retLine += ":";
-                Console.Write(col.GetValue(tableRefRows) + " , ");
-                retLine += col.GetValue(tableRefRows) + " , ";
+                Console.Write(col.GetValue(tableRefRows.ToSingleEnum()) + " , ");
+                retLine += col.GetValue(tableRefRows.ToSingleEnum()) + " , ";
                 if (fullRow)
                 {
                     Console.Write(" BASE: ");

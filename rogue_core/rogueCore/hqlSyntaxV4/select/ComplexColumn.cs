@@ -64,7 +64,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.select
             string finalValue = "";
             foreach (IColumn concatCol in columns)
             {
-                finalValue += concatCol.RetrieveStringValue(rows);
+                finalValue += concatCol.RetrieveStringValue(rows.ToSingleEnum());
             }
             return finalValue;
         }

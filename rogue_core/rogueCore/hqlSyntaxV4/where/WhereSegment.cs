@@ -39,8 +39,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
             //**Garage code should know that this table ref doesn't exist here. only reason is for parent Rows that have already been merged and have last copy of row from this table. Need to fix row merging it blows
             tempRows.FindChangeIfNotFound(thsTableRef, thsRow);
             //tempRows.Add(thsTableRef, thsRow);
-            string checkVal = localColumn.RetrieveStringValue(tempRows);
-            string evalCheck = foreignColumn.GetValue(tempRows);
+            string checkVal = localColumn.RetrieveStringValue(tempRows.ToSingleEnum());
+            string evalCheck = foreignColumn.GetValue(tempRows.ToSingleEnum());
             return compare[compareType](checkVal, evalCheck);
         }
         public Boolean IsValid(IMultiRogueRow row)
@@ -49,8 +49,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
             //**Garage code should know that this table ref doesn't exist here. only reason is for parent Rows that have already been merged and have last copy of row from this table. Need to fix row merging it blows
             //tempRows.FindChangeIfNotFound(thsTableRef, thsRow);
             //tempRows.Add(thsTableRef, thsRow);
-            string checkVal = localColumn.RetrieveStringValue(row.tableRefRows);
-            string evalCheck = foreignColumn.GetValue(row.tableRefRows);
+            string checkVal = localColumn.RetrieveStringValue(row.tableRefRows.ToSingleEnum());
+            string evalCheck = foreignColumn.GetValue(row.tableRefRows.ToSingleEnum());
             return compare[compareType](checkVal, evalCheck);
         }
         Boolean EqualCompare(String value, string compareVal)

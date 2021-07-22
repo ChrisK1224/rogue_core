@@ -19,9 +19,9 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
 {
     public class HQLLevel : SplitSegment
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, TableSplitters.whereKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey }; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey }; } }
         public List<IMultiRogueRow> rows = new List<IMultiRogueRow>();
-        public List<IMultiRogueRow> finalRows = new List<IMultiRogueRow>();
+        //public List<IMultiRogueRow> finalRows = new List<IMultiRogueRow>();
         public string lvlName { get; }
         HQLTable levelTable { get { return tables[0]; } }
         public string parentLvlName { get; }
@@ -29,7 +29,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         List<HQLLevel> childLevels = new List<HQLLevel>();
         HQLLevel parentLevel { get; }
         SelectRow selectRow { get; }
-        Classify classify { get; }
+        IClassify classify { get; }
         IWhereClause whereClause { get; }
         public int levelNum { get; }
         public QueryMetaData queryData { get; }
@@ -38,10 +38,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public HQLLevel(string lvlTxt, QueryMetaData metaData) : base(lvlTxt, metaData)
         {
             this.queryData = metaData;
-            splitList.Where(x => x.Key != KeyNames.select &&  x.Key != KeyNames.where).ToList().ForEach(x => tables.Add(new HQLTable(x.Value, metaData)));
+            splitList.Where(x => x.Key != KeyNames.select &&  x.Key != KeyNames.where && x.Key != KeyNames.classify).ToList().ForEach(x => tables.Add(new HQLTable(x.Value, metaData)));
             var rowTxt = splitList.Where(x => x.Key == KeyNames.select).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
             selectRow = new SelectRow(rowTxt, metaData);
-            classify = new Classify(splitList.Where(x => x.Key == KeyNames.classify).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            classify = ParseClassifyClause(splitList.Where(x => x.Key == KeyNames.classify).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             lvlName = levelTable.idName;
             parentLvlName = queryData.ParentLevel(levelTable.joinClause.parentTableName).lvlName;
@@ -69,6 +69,18 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
             else
             {
                 return new WhereClause(whereTxt, metaData);
+            }
+        }
+        IClassify ParseClassifyClause(string classifyTxt, QueryMetaData metaData)
+        {
+            classifyTxt = classifyTxt.Trim();
+            if (classifyTxt == "")
+            {
+                return new EmptyClassify(classifyTxt, metaData);
+            }
+            else
+            {
+                return new Classify(classifyTxt, metaData);
             }
         }
         internal void InitializeIndexedRows()

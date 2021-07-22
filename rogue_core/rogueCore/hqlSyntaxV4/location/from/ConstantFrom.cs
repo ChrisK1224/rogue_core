@@ -34,9 +34,5 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
                 }
             }
         }
-        public IEnumerable<Dictionary<string, IReadOnlyRogueRow>> LoadTableRows(List<Dictionary<string, IReadOnlyRogueRow>> parentRows, ILimit limit, IJoinClause joinClause)
-        {
-            throw new Exception("NOT READY");
-        }
     }
 }

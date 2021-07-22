@@ -14,7 +14,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
         public FileContent(string colTxt, QueryMetaData metaData)  : base(colTxt, metaData) { }
         public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
-            return File.ReadAllText(commandParams[0].GetValue(rows.First()));
+            return File.ReadAllText(commandParams[0].GetValue(rows));
         }
     }
 }

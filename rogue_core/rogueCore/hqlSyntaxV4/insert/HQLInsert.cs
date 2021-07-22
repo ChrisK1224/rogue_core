@@ -22,8 +22,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.insert
         public override List<SplitKey> splitKeys { get{ return new List<SplitKey>() { LocationSplitters.AsKey, InsertSplitters.intoKey,InsertSplitters.byKey, CommandSplitters.colSeparator, CommandSplitters.openCommand, CommandSplitters.closeCommand }; } }
         protected List<string> insertStrParams { get; private set; } = new List<string>();
         protected ICalcableFromId tableFrom { get; }
-        //IHQLInsertType hqlInsertType { get; }
         public string idName { get; }
+        //* TODO HQLINsert shouldn't have tableID avaialbe or cant be encoded***
         public IORecordID tableId { get { return ((IIdableFrom)tableFrom).tableId; } }
         public HQLInsert(string qry, QueryMetaData metaData) : base(qry, metaData)
         {

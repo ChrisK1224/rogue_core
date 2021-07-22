@@ -41,6 +41,22 @@ namespace files_and_folders
                 dict.Add(key, val);
             }
         }
+        public static List<vType> FindAddIfNotFound<kType, vType>(this Dictionary<kType, List<vType>> dict, kType key, vType val)
+        {
+            List<vType> ret;
+            if (dict.TryGetValue(key, out ret))
+            {
+                ret.Add(val);
+                return ret;
+            }
+            else
+            {
+                List<vType> newList = new List<vType>();
+                dict.Add(key, newList);
+                newList.Add(val);
+                return newList;
+            }
+        }
         public static List<vType> FindAddIfNotFound<vType>(this Dictionary<long, List<vType>> dict, int key)
         {
             List<vType> ret;

@@ -37,7 +37,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
                     throw new Exception("Unknown Calc Group Symbol");
             }
         }
-        public string RetrieveStringValue(Dictionary<string, IReadOnlyRogueRow> parentRows)
+        public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> parentRows)
         {
             string lastValue = allCalcs[0].Value.RetrieveStringValue(parentRows);
             for (int i = 1; i < allCalcs.Count; i++)

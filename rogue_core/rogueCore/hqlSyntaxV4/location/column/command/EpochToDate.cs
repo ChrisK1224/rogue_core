@@ -17,7 +17,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
         }
         public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
-            return DateHelper.EpochToDate(commandParams[0].GetValue(rows.First())).ToString();
+            return DateHelper.EpochToDate(commandParams[0].GetValue(rows)).ToString();
             //return "";
         }
     }

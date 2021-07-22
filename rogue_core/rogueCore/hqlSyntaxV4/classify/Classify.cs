@@ -3,13 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using files_and_folders;
+using FilesAndFolders;
+using System.Linq;
+
 namespace rogue_core.rogueCore.hqlSyntaxV4.classify
 {
-    class Classify : SplitSegment
+    class Classify : SplitSegment, IClassify
     {
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LocationSplitters.colSeparator}; } }
         List<IColumn> classifyCols = new List<IColumn>();
-        Dictionary<string, IMultiRogueRow> classifiedRows = new Dictionary<string, IMultiRogueRow>();
+        Dictionary<string, List<IMultiRogueRow>> classifiedRows = new Dictionary<string, List<IMultiRogueRow>>();
+        public IEnumerable<IEnumerable<IMultiRogueRow>> classifiedRows2 { get { return classifiedRows.Values.ToList(); } }
         public Classify(string hql, QueryMetaData metaData) : base(hql, metaData)
         {
             splitList.ForEach(x => classifyCols.Add(BaseColumn.ParseColumn(x.Value, metaData)));
@@ -19,7 +23,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.classify
             StringBuilder stringBuilder = new StringBuilder();
             foreach (IColumn col in classifyCols)
             {
-                stringBuilder.Append(col.RetrieveStringValue(row.tableRefRows));
+                stringBuilder.Append(col.RetrieveStringValue(row.tableRefRows.ToSingleEnum()));
             }
             classifiedRows.FindAddIfNotFound(stringBuilder.ToString(), row);
         }

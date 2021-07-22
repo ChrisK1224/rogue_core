@@ -29,21 +29,21 @@ namespace TestCodeRunnerTwo
             // var t = tmr3.ElapsedMilliseconds.ToString();
             //INSERT INTO [-1010] as INS JSON_VALUE(""JSONN"")
             //BinaryDataTable.ioRecordTable.GuessTableIDByName("IORECORDS");
-            //var testQry = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
-            //                SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP
-            //                    FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
-            //                    SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
-            //                        FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
-            //                        SELECT ROGUECOLUMNID, METAROW_NAME, ""TABLE""  AS TYP
-            //                            FROM COLUMN JOIN ON COLUMN.OWNERIOITEM = TR.ROGUECOLUMNID
-            //                            SELECT COLUMNIDNAME  AS METAROW_NAME, ""COLUMN""  AS TYP ";
+            var testQry = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
+                            SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP
+                                FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
+                                SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
+                                    FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
+                                    SELECT ROGUECOLUMNID, METAROW_NAME, ""TABLE""  AS TYP
+                                        FROM COLUMN JOIN ON COLUMN.OWNERIOITEM = TR.ROGUECOLUMNID
+                                        SELECT COLUMNIDNAME  AS METAROW_NAME, ""COLUMN""  AS TYP ";
             //////var testQry = "FROM DATE_RANGE(\"06-20-2021\", \"day\", \"1\", \"1\") as DR SELECT DR.DATE_ITEM FROM IORECORDS as yo WHERE METAROW_NAME = \"COLUMN\" and NAME_COLUMN_OID != \"\" SELECT METAROW_NAME & \"YOLO\", MetaRecordType FROM COLUMN JOIN ON COLUMN.ROGUECOLUMNID = YO.OWNERIOITEM SELECT [{yo.NAME_COLUMN_OID}]";
             //////var testQry = "FROM DATE_RANGE(\"tseter\") as haha SELECT haha.hyoo, [23] as bll, {[45]} as encodeeee FROM blah where blah.hey = \"yo\" AND blah.yo = \"SDF\" LIMIT 100 COMBINE YO SELECT * FROM BLAHTWOOO JOIN ON blah.yo = BLAHTWOOD.hey SELECT BLAHTWOODs.blahCol INSERT INTO INS JSON_VALUES(\" FROM \") JOIN TO BLAHTWOOO SELECT *";
             ////var stopwatch3 = new Stopwatch();
             ////stopwatch3.Start();
             //var test = new HQLQuery(testQry);
-            ////stopwatch3.Stop();
-            ////Console.WriteLine(stopwatch3.ElapsedMilliseconds);
+            //////stopwatch3.Stop();
+            //////Console.WriteLine(stopwatch3.ElapsedMilliseconds);
             //test.Execute();
             //test.PrintQuery();
             //test.PrintSegments();
@@ -124,40 +124,50 @@ namespace TestCodeRunnerTwo
             //GC.WaitForPendingFinalizers();
             //GC.Collect();
 
-           
+
 
             // performs operations here
 
-           
+
             //var qryyy3 = @"FROM STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL as DI SELECT DI.open, DI.high, DI.low, DI.close, DI.close - DI.open as totalMovement, [[DI.high-DI.low]/ DI.open] * ""100"" as PercentMovement";
             //var qryyy3 = @"FROM STOCKHISTORY.CRYPTOCOMPARE.APIRUNS AS AR  
-            //                COMBINE STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL AS DI JOIN ON di.APIRUNS_OID = ar.ROGUECOLUMNID WHERE di.ROGUECOLUMNID != """" AND AR.Run_TYPE = ""day"" SELECT AR.ROGUECOLUMNID AS runID, Di.ROGUECOLUMNID AS rowID,  EPOCH_TO_DATE(AR.TO_DATE) as DATE,AR.Crypto_Id, AR.RUN_TYPE, DI.open, DI.high, DI.low, DI.close, DI.close - DI.open as totalMovement, [[DI.high-DI.low]/ DI.open] * ""100"" as PercentMovement
-            //                 GROUP BY ";
+            //                COMBINE STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL AS DI JOIN ON di.APIRUNS_OID = ar.ROGUECOLUMNID WHERE di.ROGUECOLUMNID != """" AND AR.Run_TYPE = ""day"" SELECT AR.ROGUECOLUMNID AS runID, Di.ROGUECOLUMNID AS rowID,  EPOCH_TO_DATE(AR.TO_DATE) as DATE,AR.Crypto_Id, AR.RUN_TYPE, DI.open, DI.high, DI.low, DI.close, DI.close - DI.open as totalMovement, [[DI.high-DI.low]/ DI.open] * ""100"" as PercentMovement ";
 
             var qryyy3 = @"FROM STOCKHISTORY.CRYPTOCOMPARE.APIRUNS AS AR  
-                            COMBINE STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL AS DI JOIN ON di.APIRUNS_OID = ar.ROGUECOLUMNID WHERE di.ROGUECOLUMNID != """" AND AR.Run_TYPE = ""day"" SELECT AR.Crypto_Id
-                             GROUP BY AR.Crypto_Id";
+                            COMBINE STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL AS DI JOIN ON di.APIRUNS_OID = ar.ROGUECOLUMNID WHERE di.ROGUECOLUMNID != """" AND AR.Run_TYPE = ""day"" AND AR.CRYPTO_Id = ""ETH"" SELECT AR.Crypto_Id, DI.HIGH, EPOCH_TO_DATE(DI.time) as DATE";
             var hey3 = new HQLQuery(qryyy3);
-            var timer5 = new Stopwatch();
-            var before = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
-            timer5.Start();
+            //var timer5 = new Stopwatch();
+            //var before = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
+            //timer5.Start();
 
             hey3.Execute();
-            timer5.Stop();
-            var after = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
-            Console.WriteLine("FULLMEMORY:" + (after- before));
+            //timer5.Stop();
+            //var after = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
+            //Console.WriteLine("FULLMEMORY:" + (after- before));
             hey3.PrintQuery();
-            var after2 = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
-            Console.WriteLine("FULLMEMORY:" + (after2 - after));
+            //var after2 = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
+            //Console.WriteLine("FULLMEMORY:" + (after2 - after));
             //var hey2 = new HQLQuery(qryyy2);
             //var hey = new SelectHQLStatement("FROM SEG SELECT *");
             //  var hey = new SelectHQLStatement("INSERT INTO[2069090] as INSTBL JSON_VALUE(\"H:\\Development\\Visaul Studio Code\\RedditAPI\\ApiRuns\\512\\data.json\", \"TESTER5\") SELECT INSTBL.ROGUECOLUMNID");
             //string qryyy = @"FROM ""BLAH"" SELECT  DATE_TO_EPOCH(CURRENT_DATE()) ";
-            string qryyy = @"FROM DATE_RANGE(""07-02-2021"", ""day"", ""-1"", ""1"") as DR
-               COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
-               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, rt.DEFAULT_TABLE_NAME as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, ci.cryptoId AS CRYPTO_ID
+            string qryyy = @"FROM DATE_RANGE(""07-19-2021"", ""day"", ""-1"", ""1"") as DR SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""STOCKDATA"" as DEFAULT_TABLE_NM, ""DAY"" as RUN_TYPE, ""ETH"" AS CRYPTO_ID, 
                   FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
-                           INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+                      INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+            //INSERT INTO [-1010] as NewOrExistTable BY DEDUPLICATE(APIResult.Owner_Database_ID as OwnerIOItem, ""API_RUN_LINK"" as MetaRow_Name)
+            //    INSERT INTO [{ NewOrExistTable.RogueTableID }] as InDBMetaRow BY DEDUPLICATE(APIResult.To_Date, APIResult.API_SOURCE_NM, APIResult.RUN_TYPE, ApiResult.CRYPTO_ID) ";
+
+            //***WORKING API QUERY FOR FULL DAY ALMOST DONE
+            string qryyy22 = @"FROM DATE_RANGE(""07-19-2021"", ""day"", ""-1"", ""1"") as DR
+               COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
+               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""STOCKDATA"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.Daily_Limit_Num as Limit, ci.cryptoId AS CRYPTO_ID, 
+                  FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
+                      INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+            //INSERT INTO [-1010] as NewOrExistTable BY DEDUPLICATE(APIResult.Owner_Database_ID as OwnerIOItem, ""API_RUN_LINK"" as MetaRow_Name)
+            //    INSERT INTO [{ NewOrExistTable.RogueTableID }] as InDBMetaRow BY DEDUPLICATE(APIResult.To_Date, APIResult.API_SOURCE_NM, APIResult.RUN_TYPE, ApiResult.CRYPTO_ID) ";
+
+
+
 
             ////string qryyy = @"FROM DATE_RANGE(""07-01-2021"", ""day"", ""1"", ""1"") as DR SELECT DR.DATE_ITEM 
             //                    FROM ""APIINFO"" JOIN TO DR SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""DayInterval"" AS DEFAULT_TABLE_NM, ""day"" as RUN_TYPE, ""ETH"" AS CRYPTO_ID 
@@ -176,7 +186,7 @@ namespace TestCodeRunnerTwo
             //    i++;
             //}
             hey.PrintQuery();
-            string lfl = "SF";
+             string lfl = "SF";
             //var emojis = "👹 in 🇯🇵";
             //var textParts = StringInfo.GetTextElementEnumerator(emojis);
             //while (textParts.MoveNext())

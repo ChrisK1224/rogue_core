@@ -31,8 +31,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             this.includeEmpty = includeEmpty;
             this.replaceType = replaceType;
             this.includeInSplit = includeInSplit;
-            //GetValue = GetAfterValue;
             //this.takeAfter = takeAfter;
+            //GetValue = GetAfterValue;
             this.GetValue = (takeAfter) ? GetAfterValue : this.GetValue = GetBeforeValue;
         }
         string GetBeforeValue(List<Match> validMatches,int i,int index, string txt)
@@ -66,6 +66,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     }
     public static class KeyNames
     {
+        public const string with = "WITH";
+
         public const string from = "FROM";
         public const string select = "SELECT";
         public const string combine = "COMBINE";
@@ -108,6 +110,13 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public const string lessThanKey = "<";
 
         public const string startKey = "";
+    }
+    public static class GroupSplitters
+    {
+        public static readonly SplitKey withKey = new SplitKey(KeyNames.with, SplitKey.WhiteSpaceOptions.include, false, true);
+
+        public static readonly SplitKey openGroup = new SplitKey(KeyNames.openParenthensis, SplitKey.WhiteSpaceOptions.none, false, true, true);
+        public static readonly SplitKey closeGroup = new SplitKey(KeyNames.closeParenthesis, SplitKey.WhiteSpaceOptions.none, false, false, true);
     }
     public static class LevelSplitters
     {

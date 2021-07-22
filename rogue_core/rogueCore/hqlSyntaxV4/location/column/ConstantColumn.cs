@@ -22,6 +22,6 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column
                 //LocalSyntaxParts = ErrorSyntaxParts;
             }
         }
-        public string RetrieveStringValue(Dictionary<string, IReadOnlyRogueRow> rows) { return constValue; }
+        public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows) { return constValue; }
     }
 }

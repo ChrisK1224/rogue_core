@@ -12,6 +12,10 @@ namespace FilesAndFolders
     /// </summary>
     public static class stringHelper
     {
+        public static IEnumerable<T> ToSingleEnum<T>(this T item)
+        {
+            yield return item;
+        }
         public static int FindCharIndexAfterString(this string source, string findValue, char nextChar)
         {
             int sourceLocation = source.EndIndexOf(findValue);

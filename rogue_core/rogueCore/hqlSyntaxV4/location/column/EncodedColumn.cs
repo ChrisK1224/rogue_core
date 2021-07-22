@@ -89,14 +89,14 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column
         //{
         //    return new ColumnRowID(directID);
         //}
-        public string RetrieveStringValue(Dictionary<string, IReadOnlyRogueRow> parentRows)
+        public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> parentRows)
         {
             string colIDorName = encodedColumn.RetrieveStringValue(parentRows);
             //** Shit code to handle if the encoded column value is blank
             if(colIDorName != "")
             {
                 ResetEncodedID(EncodedIDPull(colIDorName));
-                return parentRows[colTableRefName].ITryGetValueByColumn(columnRowID);
+                return parentRows.First()[colTableRefName].ITryGetValueByColumn(columnRowID);
             }
             else
             {

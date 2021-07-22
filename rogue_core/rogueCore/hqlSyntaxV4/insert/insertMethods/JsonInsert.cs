@@ -9,6 +9,7 @@ using rogue_core.rogueCore.hqlSyntaxV4.location;
 using rogueCore.hqlSyntaxV3;
 using rogue_core.rogueCore.hqlSyntaxV4.location.column;
 using rogue_core.rogueCore.hqlSyntaxV4.location.from;
+using FilesAndFolders;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.insert
 {
@@ -24,7 +25,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.insert
         }
         protected override IEnumerable<IReadOnlyRogueRow> Execute(IMultiRogueRow row, ICalcableFromId from)
         {
-            var jsonInsert = new jsonTester(insertParameters[0].RetrieveStringValue(row.tableRefRows), insertParameters[1].RetrieveStringValue(row.tableRefRows), from.CalcTableID(row).ToString());
+            var jsonInsert = new jsonTester(insertParameters[0].RetrieveStringValue(row.tableRefRows.ToSingleEnum()), insertParameters[1].RetrieveStringValue(row.tableRefRows.ToSingleEnum()), from.CalcTableID(row).ToString());
             yield return jsonInsert.topRow;
         }
         public void PreFill(QueryMetaData metaData, string defaultName)
@@ -38,7 +39,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.insert
 
         public override string PrintDetails()
         {
-            throw new NotImplementedException();
+            return "JSONINSERT";
         }
     }
 }
