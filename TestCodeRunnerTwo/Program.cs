@@ -18,6 +18,13 @@ namespace TestCodeRunnerTwo
     {
         static void Main(string[] args)
         {
+            string qrysDel = @"DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2563086"" SELECT ROGUECOLUMNID";
+            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2498397"" SELECT ROGUECOLUMNID
+            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2484893"" SELECT ROGUECOLUMNID
+            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2480850"" SELECT ROGUECOLUMNID";
+            var heyDel = new HQLQuery(qrysDel);
+            heyDel.Execute();
+            heyDel.PrintQuery();
             //var calcTest = new CalcableGroups("[\"5\" + [\"4\" - \"2\"] + \"6\"] - [\"7\"]", new QueryMetaData());
             // var tmr3 = new Stopwatch();
             // tmr3.Start();
@@ -29,8 +36,29 @@ namespace TestCodeRunnerTwo
             // var t = tmr3.ElapsedMilliseconds.ToString();
             //INSERT INTO [-1010] as INS JSON_VALUE(""JSONN"")
             //BinaryDataTable.ioRecordTable.GuessTableIDByName("IORECORDS");
-            var testQry = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
-                            SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP
+            var testQry4 = @"FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+COMBINE StockHistory.CryptoCompare.DAYINTERVAL  as di JOIN ON di.APIRUNS_OID = api.ROGUECOLUMNID 
+WHERE api.CRYPTO_ID = ""ETH""
+SELECT api.CRYPTO_ID, api.RUN_TYPE , di.time, di.high, di.low, di.open, di.volumeto, di.close";
+
+            var testQry = @"WITH csvTbl FROM STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL 
+                                        SELECT time, high, low, open, volumefrom, volumeto, close  CONVERT CSV END
+   
+            
+             FROM csvTbl 
+                SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""C:\Users\chris\Desktop\TestML"") ";
+
+            var testQry3 = @"with csvTbl FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+COMBINE StockHistory.CryptoCompare.DAYINTERVAL  as di JOIN ON di.APIRUNS_OID = api.ROGUECOLUMNID 
+WHERE api.CRYPTO_ID = ""ETH""
+SELECT api.CRYPTO_ID, api.RUN_TYPE , di.time, di.high, di.low, di.open, di.volumeto, di.close CONVERT CSV END 
+FROM csvTbl 
+ SELECT  GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""C:\Users\chris\Desktop\TestML"") ";
+            
+            // SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""Close"", ""C:\Users\chris\Desktop\TestML"") ";
+
+            var testQry2 = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
+                            SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP, CURRENT_DATE() 
                                 FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
                                 SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
                                     FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
@@ -41,11 +69,11 @@ namespace TestCodeRunnerTwo
             //////var testQry = "FROM DATE_RANGE(\"tseter\") as haha SELECT haha.hyoo, [23] as bll, {[45]} as encodeeee FROM blah where blah.hey = \"yo\" AND blah.yo = \"SDF\" LIMIT 100 COMBINE YO SELECT * FROM BLAHTWOOO JOIN ON blah.yo = BLAHTWOOD.hey SELECT BLAHTWOODs.blahCol INSERT INTO INS JSON_VALUES(\" FROM \") JOIN TO BLAHTWOOO SELECT *";
             ////var stopwatch3 = new Stopwatch();
             ////stopwatch3.Start();
-            //var test = new HQLQuery(testQry);
+            var test = new HQLQuery(testQry4);
             //////stopwatch3.Stop();
             //////Console.WriteLine(stopwatch3.ElapsedMilliseconds);
-            //test.Execute();
-            //test.PrintQuery();
+            test.Execute();
+            test.PrintQuery();
             //test.PrintSegments();
             //string ll = "SDF";
             //var line = " FROM this.B FROMutton FROM .Value\nthiFROMs.value\ndocument.thisButton.Value";
@@ -99,18 +127,7 @@ namespace TestCodeRunnerTwo
             //)
             // UpdateModifier.ArchiveRogueInstance();
             //string epochTime = DateHelper.DateToEpoch(DateTime.Now);
-            //           string qrys = @"DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2370935"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2208256"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2116987"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2096646"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2096441"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2094650"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2069324"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2069191"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387052"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387090"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2388837"" SELECT ROGUECOLUMNID";
-            //var hey = new HQLQuery(qrys);
+           
             //var qryyy = @"DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387034"" SELECT ROGUECOLUMNID
             //            DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387030"" SELECT ROGUECOLUMNID";
             //            var qryyy2 = @"DELETE [-1010] WHERE ROGUECOLUMNID = ""2442845"" SELECT ROGUECOLUMNID 
@@ -151,7 +168,7 @@ namespace TestCodeRunnerTwo
             //var hey = new SelectHQLStatement("FROM SEG SELECT *");
             //  var hey = new SelectHQLStatement("INSERT INTO[2069090] as INSTBL JSON_VALUE(\"H:\\Development\\Visaul Studio Code\\RedditAPI\\ApiRuns\\512\\data.json\", \"TESTER5\") SELECT INSTBL.ROGUECOLUMNID");
             //string qryyy = @"FROM ""BLAH"" SELECT  DATE_TO_EPOCH(CURRENT_DATE()) ";
-            string qryyy = @"FROM DATE_RANGE(""07-19-2021"", ""day"", ""-1"", ""1"") as DR SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""STOCKDATA"" as DEFAULT_TABLE_NM, ""DAY"" as RUN_TYPE, ""ETH"" AS CRYPTO_ID, 
+            string qryyy = @"FROM DATE_RANGE(""07-28-2021"", ""day"", ""-1"", ""1"") as DR SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CRYPTOHISTORY"" as DEFAULT_TABLE_NM, ""DAY"" as RUN_TYPE, ""ETH"" AS CRYPTO_ID, 
                   FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
                       INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
             //INSERT INTO [-1010] as NewOrExistTable BY DEDUPLICATE(APIResult.Owner_Database_ID as OwnerIOItem, ""API_RUN_LINK"" as MetaRow_Name)
@@ -160,7 +177,7 @@ namespace TestCodeRunnerTwo
             //***WORKING API QUERY FOR FULL DAY ALMOST DONE
             string qryyy22 = @"FROM DATE_RANGE(""07-19-2021"", ""day"", ""-1"", ""1"") as DR
                COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
-               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""STOCKDATA"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.Daily_Limit_Num as Limit, ci.cryptoId AS CRYPTO_ID, 
+               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""STOCKDATA"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, ""2000"" as Limit, ci.cryptoId AS CRYPTO_ID, 
                   FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
                       INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
             //INSERT INTO [-1010] as NewOrExistTable BY DEDUPLICATE(APIResult.Owner_Database_ID as OwnerIOItem, ""API_RUN_LINK"" as MetaRow_Name)

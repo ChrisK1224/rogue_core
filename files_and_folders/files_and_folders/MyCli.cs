@@ -11,9 +11,11 @@ namespace files_and_folders
         public static string RunCommand(string cmd)
         {
             cmd = "/C " + cmd;
-            Process.Start("cmd.exe", cmd);
+            //var proc = Process.Start("cmd.exe", cmd);
+            //Console.Clear();
             using (Process process = Process.Start("cmd.exe", cmd))
             {
+                process.WaitForExit();
                 using (StreamReader reader = process.StandardOutput)
                 {
                     string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
@@ -23,6 +25,39 @@ namespace files_and_folders
                 }
             }
         }
+        public static string RunCommandOLD(string cmdTxt)
+        {
+            //Console.Clear();
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.Start();
+
+            cmd.StandardInput.WriteLine(cmdTxt);
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();
+            return cmd.StandardOutput.ReadToEnd();
+        }
+        //public static string RunShellCommand(string cmd)
+        //{
+        //    string ret = "";
+        //    using (PowerShell powerShell = PowerShell.Create())
+        //    {
+        //        powerShell.AddScript(txtInput.Text);
+        //        powerShell.AddCommand("Out-String");
+        //        Collection<PSObject> PSOutput = powerShell.Invoke();
+        //        StringBuilder stringBuilder = new StringBuilder();
+        //        foreach (PSObject pSObject in PSOutput)
+        //            stringBuilder.AppendLine(pSObject.ToString());
+        //        ret = stringBuilder.ToString();
+        //    }
+        //    return ret;
+        //}
+
         public static string RunPythonCommand(string cmd, string[] args)
         {
             ProcessStartInfo start = new ProcessStartInfo();

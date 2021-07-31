@@ -40,7 +40,9 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         static string outsideQuotesAndParenPattern = @"((?<=\s)|^)(@TYPES)((?=\s)|$)(?=(?:[^\""]|\""[^\""]*?\"")*?$)(?![^\(]*\))";
         //public static string outsideQuotesAndParenPatternNoSpace = @"(@TYPES)(?=(?:[^\""]|\""[^\""]*?\"")*?$)(?![^\(]*\))";
         //***CHANGED FROM ABOVE MIGHT NOT NEED IGNORE PARENT DOESN"T WORK ANYWAY
-        public static string outsideQuotesAndParenPatternNoSpace = @"(@TYPES)(?=(?:[^\""]|\""[^\""]*?\"")*?$)";
+        //**Changed recently to inlcude not between paren
+        public static string outsideQuotesAndParenPatternNoSpace = @"(@TYPES)(?=(?:[^\""]|\""[^\""]*?\"")*?$)(?![^\(]*\))";
+        //public static string outsideQuotesAndParenPatternNoSpace = @"(@TYPES)(?=(?:[^\""]|\""[^\""]*?\"")*?$)";
         //THis might work for not between quotes unless ESCAPED:: \+(?=([^"\\]*(\\.|"([^"\\]*\\.)*[^"\\]*"))*[^"]*$)
         //public static string outsideQuotesPatternNoSpace = @"(@TYPES)(?=(?:[^\""]|\""[^\""]*?\"")*?$)(?![^\(]*\))";
         //static string outsideQuotesAndParenPatternNoSpace = @"(@TYPES)";
@@ -75,7 +77,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
                 string value = splitKey.GetValue(validMatches, i, index, txt);
                 if (value != "" || splitKey.includeEmpty)
                 {
-                    splitList.Add(new KeyValuePair<string, string>(name,value ));
+                    splitList.Add(new KeyValuePair<string, string>(splitKey.keyTxt,value ));
                 }                
                 //if (i < (validMatches.Count - 1))
                 //{

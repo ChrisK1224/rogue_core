@@ -28,7 +28,15 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
         }
         public string GetAliasName()
         {
-            return splitList.Where(x => x.Key == KeyNames.asKey).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
+            string name = splitList.Where(x => x.Key == KeyNames.asKey).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
+            if (name.StartsWith("\""))
+            {
+                return name.Substring(1, name.Length - 2);
+            }
+            else
+            {
+                return name;
+            }
         }
     }
 }

@@ -19,8 +19,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     {
         public List<HQLGroup> groups = new List<HQLGroup>();
         List<HQLLevel> levels = new List<HQLLevel>();
+        List<IQueryableDataSet> dataSets = new List<IQueryableDataSet>();
         List<HQLTable> tables = new List<HQLTable>(); 
         List<ITempBase> allSegs = new List<ITempBase>();
+         
         int unnamedColCount = 0;
         public QueryMetaData() 
         {
@@ -32,11 +34,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         }
         public HQLLevel ParentLevel(string parentName)
         {
-            return levels.Where(lvl => lvl.lvlName == parentName.ToUpper()).FirstOrDefault();
+            return (HQLLevel)levels.Where(lvl => lvl.dataSetName == parentName.ToUpper()).FirstOrDefault();
         }
         public List<HQLLevel> ChildLevels(string parentName)
         {
-            return levels.Where(lvl => lvl.parentLvlName == parentName.ToUpper()).ToList();
+            return levels.Where(lvl => ((HQLLevel)lvl).parentLvlName == parentName.ToUpper()).Select(lvl => ((HQLLevel)lvl)).ToList();
         }
         public List<HQLTable> ChildTablesForIndexing(string parentName)
         {
@@ -49,13 +51,19 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public void AddGroup(HQLGroup group)
         {
             groups.Add(group);
+            
+        }
+        public HQLGroup GetGroupByName(string idName)
+        {
+            return this.groups.Where(x => x.idName.ToUpper() == idName.ToUpper()).FirstOrDefault();
         }
         public int AddLevel(HQLLevel level)
         {
+            dataSets.Add(level);
             levels.Add(level);
-            var parentLvl = levels.Where(lvl => lvl.lvlName == level.parentLvlName.ToUpper()).FirstOrDefault();
-            parentLvl.AddChildLevel(level);
-            return parentLvl.levelNum + 1;
+            var parentLvl = levels.Where(lvl => lvl.dataSetName == level.parentLvlName.ToUpper()).FirstOrDefault();
+            ((HQLLevel)parentLvl).AddChildLevel(level);
+            return ((HQLLevel)parentLvl).levelNum + 1;
         }
         public void AddTable(HQLTable table)
         {

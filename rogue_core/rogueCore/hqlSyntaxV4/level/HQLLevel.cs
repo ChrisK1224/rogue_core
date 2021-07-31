@@ -17,11 +17,11 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.level
 {
-    public class HQLLevel : SplitSegment
+    public class HQLLevel : SplitSegment, IQueryableDataSet
     {
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey }; } }
-        public List<IMultiRogueRow> rows = new List<IMultiRogueRow>();
-        //public List<IMultiRogueRow> finalRows = new List<IMultiRogueRow>();
+        public List<IMultiRogueRow> rows { get; set; } = new List<IMultiRogueRow>();
+        public string dataSetName { get { return lvlName.ToUpper(); } }
         public string lvlName { get; }
         HQLTable levelTable { get { return tables[0]; } }
         public string parentLvlName { get; }
@@ -29,6 +29,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         List<HQLLevel> childLevels = new List<HQLLevel>();
         HQLLevel parentLevel { get; }
         SelectRow selectRow { get; }
+        public List<string> columnNames { get { return selectRow.selectColumns.Select(x => x.columnName).ToList(); } }
         IClassify classify { get; }
         IWhereClause whereClause { get; }
         public int levelNum { get; }
@@ -55,6 +56,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
             var masterRow = MultiRogueRow.MasterRow();
             rows.Add(masterRow);
         }
+        //public Func<string, IReadOnlyRogueRow, IMultiRogueRow, bool>  PreCheckWhereClause { get { return whereClause.CheckWhereClause; } }
         internal static HQLLevel MasterLevel(QueryMetaData metaData)
         {            
             return new HQLLevel(metaData);  
@@ -113,15 +115,16 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
                 LoadTable(tables[i], this, MergeWithLevelRow);
                 //LoadTable2(tables[i], this);
             }
-            foreach(var row in rows)
+            for(int i = rows.Count-1; i >= 0; i--)
             {
-                if (!whereClause.CheckWhereClause(row))
+                if (!whereClause.CheckWhereClause(rows[i]))
                 {
-                    row.RemoveFromParent();
+                    rows[i].RemoveFromParent();
+                    rows.Remove(rows[i]);
                 }
                 else
                 {
-                    classify.ClassifyRow(row);
+                    classify.ClassifyRow(rows[i]);
                 }
             }
             foreach(var childLevel in childLevels)

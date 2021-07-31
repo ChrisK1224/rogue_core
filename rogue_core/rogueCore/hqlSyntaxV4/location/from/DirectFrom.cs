@@ -23,9 +23,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
         public string defaultName => throw new NotImplementedException();
         public QueryMetaData queryData => throw new NotImplementedException();
         public string origTxt => throw new NotImplementedException();
-
         public bool IsIdable { get { return true; } }
-
         public DirectFrom(IORecordID tableID)
         {
             //this.tableID = tableID;

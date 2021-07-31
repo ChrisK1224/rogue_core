@@ -11,9 +11,7 @@ using rogue_core.rogueCore.id.rogueID;
 using rogueCore.hqlSyntaxV4.join;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using static rogueCore.hqlSyntaxV4.join.IJoinClause;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.table
@@ -21,17 +19,17 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
     public class HQLTable : SplitSegment
     {
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { TableSplitters.whereKey, TableSplitters.limitKey, TableSplitters.joinKey, TableSplitters.combineKey, TableSplitters.fromKey, TableSplitters.insertKey, TableSplitters.deleteKey, TableSplitters.updateKey }; } }
-        public string idName { get { return from.idName.ToUpper(); } }        
+        public string idName { get { return from.idName.ToUpper(); } }
         public string parentTableName { get { return joinClause.parentTableName; } }
         public IJoinClause joinClause { get; }
-        IWhereClause whereClause { get; }
+        //IWhereClause whereClause { get; }
         ILimit limit { get; }
         IFrom from { get; }
         internal List<Dictionary<string, IReadOnlyRogueRow>> rows { get; } = new List<Dictionary<string, IReadOnlyRogueRow>>();
         public List<IColumn> IndexedWhereColumns { get { return whereClause.evalColumns.Where(iCol => !(iCol is ConstantColumn)).ToList(); } }
-        Dictionary<IColumn, IReadOnlyRogueRow> indexedRows = new Dictionary<IColumn, IReadOnlyRogueRow>();
+        //Dictionary<IColumn, IReadOnlyRogueRow> indexedRows = new Dictionary<IColumn, IReadOnlyRogueRow>();
         public IORecordID potentialTableID { get { return ((IIdableFrom)from).tableId; } }
-        public HQLTable(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData) 
+        public HQLTable(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData)
         {
             //var stopwatch3 = new Stopwatch();
             //stopwatch3.Start(); 
@@ -42,18 +40,17 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
             from = ParseFromClause(splitList.Where(x => x.Key == KeyNames.from || x.Key == KeyNames.combine || x.Key == KeyNames.insert || x.Key == KeyNames.delete || x.Key == KeyNames.update).FirstOrDefault(), metaData);
             //stopwatch3.Stop();
             //Console.WriteLine("FROM:" + stopwatch3.ElapsedMilliseconds);
-            whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            //whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             joinClause = ParseJoinClause(splitList.Where(x => x.Key == KeyNames.join).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             limit = ParseLimitClause(splitList.Where(x => x.Key == KeyNames.limit).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             //stopwatch3.Stop();
             //Console.WriteLine("TableTime " + idName + " : " + stopwatch3.ElapsedMilliseconds);
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(HQLLevel parentLvl, WhereClause whereClause, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
         {
-            
             foreach (var row in from.FilterAndStreamRows(limit, joinClause, whereClause, parentLvl, AddRow))
-            {                
-                yield return row;                
+            {
+                yield return row;
             }
         }
         //public IEnumerable<Dictionary<string, IReadOnlyRogueRow>> LoadTableRows(List<Dictionary<string, IReadOnlyRogueRow>> parentRows)
@@ -67,9 +64,9 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         public bool DoesColumnBelong(string columnName)
         {
             if (from is IIdableFrom)
-            {                
+            {
                 var lst = BinaryDataTable.columnTable.AllColumnsPerTable(((IIdableFrom)from).tableId).Where(x => x.ColumnIDNameID() == columnName.ToUpper()).ToList();
-                if(lst.Count > 0)
+                if (lst.Count > 0)
                 {
                     return true;
                 }
@@ -86,7 +83,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         IWhereClause ParseWhereClause(string whereTxt, QueryMetaData metaData)
         {
             whereTxt = whereTxt.Trim();
-            if(whereTxt == "")
+            if (whereTxt == "")
             {
                 return new EmptyWhereClause(whereTxt, metaData);
             }
@@ -133,7 +130,14 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
             string hql = hqlPair.Value.Trim();
             //string afterFrom = hql.AfterFirstSpace().ToUpper();
             IFrom newTable;
-            if (hql.StartsWith("EXECUTE("))
+            //**Weird logic. Group fufills IFrom to act like regular from when being referenced. 
+            var testName = hql.BeforeFirstSpace();
+            var fromGroup = metaData.GetGroupByName(hql.BeforeFirstSpace());
+            if (fromGroup != null)
+            {
+                newTable = fromGroup;
+            }
+            else if (hql.StartsWith("EXECUTE("))
             {
                 newTable = new ExecutableFrom(hql, metaData);
             }

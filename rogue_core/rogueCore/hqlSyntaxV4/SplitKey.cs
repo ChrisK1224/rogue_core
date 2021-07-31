@@ -67,6 +67,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     public static class KeyNames
     {
         public const string with = "WITH";
+        public const string withEnd = "END";
+
+        public const string convert = "CONVERT";
+        public const string pipe = "|";
+        public const string questionMark = "?";
 
         public const string from = "FROM";
         public const string select = "SELECT";
@@ -102,6 +107,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public const string openBracket = "[";
         public const string closeBracket = "]";
 
+
+
         public const string addKey = "+";
         public const string minusKey = "-";
         public const string multiplyKey = "*";
@@ -113,10 +120,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     }
     public static class GroupSplitters
     {
-        public static readonly SplitKey withKey = new SplitKey(KeyNames.with, SplitKey.WhiteSpaceOptions.include, false, true);
-
-        public static readonly SplitKey openGroup = new SplitKey(KeyNames.openParenthensis, SplitKey.WhiteSpaceOptions.none, false, true, true);
-        public static readonly SplitKey closeGroup = new SplitKey(KeyNames.closeParenthesis, SplitKey.WhiteSpaceOptions.none, false, false, true);
+        public static readonly SplitKey withKey = new SplitKey(KeyNames.with, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey convertKey = new SplitKey(KeyNames.convert, SplitKey.WhiteSpaceOptions.include, false, false, true);
+        public static readonly SplitKey withEndKey = new SplitKey(KeyNames.withEnd, SplitKey.WhiteSpaceOptions.include, false, true, true);
+        public static readonly SplitKey openCommand = new SplitKey(KeyNames.openParenthensis, SplitKey.WhiteSpaceOptions.none, false, false, false, KeyNames.pipe, SplitKey.ReplaceTypes.firstInstance);
+        public static readonly SplitKey closeCommand = new SplitKey(KeyNames.closeParenthesis, SplitKey.WhiteSpaceOptions.none, false, false, true, KeyNames.questionMark, SplitKey.ReplaceTypes.lastInstance);
     }
     public static class LevelSplitters
     {
