@@ -28,9 +28,16 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         {
             levels.Add(HQLLevel.MasterLevel(this));
         }
-        public List<IMultiRogueRow> TopRows()
+        public IEnumerable<IMultiRogueRow> TopRows()
         {
-            return groups[groups.Count-1].levels.First().rows[0].childRows;
+            foreach(var lvl in groups[groups.Count - 1].topLevels)
+            {
+                foreach(var row in lvl.rows)
+                {
+                    yield return row;
+                }
+            }
+            //return groups[groups.Count-1].levels.First().rows[0].childRows;
         }
         public HQLLevel ParentLevel(string parentName)
         {

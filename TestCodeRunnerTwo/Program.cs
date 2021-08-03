@@ -18,13 +18,55 @@ namespace TestCodeRunnerTwo
     {
         static void Main(string[] args)
         {
-            string qrysDel = @"DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2563086"" SELECT ROGUECOLUMNID";
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2498397"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2484893"" SELECT ROGUECOLUMNID
-            //DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2480850"" SELECT ROGUECOLUMNID";
-            var heyDel = new HQLQuery(qrysDel);
-            heyDel.Execute();
-            heyDel.PrintQuery();
+
+            string apiQry = @"FROM DATE_RANGE(Add_Days(CURRENT_DATE(),""-1""), ""day"", ""-1"", ""1"") as DR
+               COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
+               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.DAILY_LIMIT_NUM as Limit, ci.cryptoId AS CRYPTO_ID
+                  FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
+                      INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+            var apiRun = new HQLQuery(apiQry);
+            apiRun.Execute();
+            apiRun.PrintQuery();
+
+            string histQuery = @"FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+            COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+            WHERE api.CRYPTO_ID = ""DOGE"" and api.RUN_TYPE = ""minute"" 
+            SELECT api.CRYPTO_ID, api.RUN_TYPE , EPOCH_TO_DATE(ch.time) as dt, ch.high, ch.low, ch.open, ch.volumeto, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement";
+            var hist = new HQLQuery(histQuery);
+            hist.Execute();
+            hist.PrintQuery();
+
+            //**Thisis to delete rows from API Runs AND CRYPTOHISTORY Table... if Needed later to void erronious runs * *
+            //string qrysDel = @"DELETE STOCKHISTORY.CRYPTOCOMPARE.APIRUNS WHERE TO_DATE = ""7/31/2021 12:00:00 AM"" SELECT ROGUECOLUMNID";
+
+            //var heyDel = new HQLQuery(qrysDel);
+            //heyDel.Execute();
+            //heyDel.PrintQuery();
+            //DELETE IORECORDS WHERE ROGUECOLUMNID = ""2571357"" SELECT ROGUECOLUMNID";
+            //**For manual test run of API 
+            //var qryyy7 = @"FROM DATE_RANGE(""07-28-2021"", ""day"", ""1"", ""1"") as DR
+            //              SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" AS DEFAULT_TABLE_NM, ""day"" as RUN_TYPE, ""ETH"" AS CRYPTO_ID, ""2000"" as LIMIT 
+            //                FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
+            //                    INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+
+            //string testtttt = @"FROM DATE_RANGE(""07-29-2021"", ""day"", ""-1"", ""1"") as DR SELECT DR.DATE_ITEM";
+            //***WORKING API QUERY FOR FULL DAY ALMOST DONE
+
+
+            //string ll = "SDF";
+            //var basicTestQuery = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
+            //                SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP, CURRENT_DATE() 
+            //                    FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
+            //                    SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
+            //                        FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
+            //                        SELECT ROGUECOLUMNID, METAROW_NAME, ""TABLE""  AS TYP
+            //                            FROM COLUMN JOIN ON COLUMN.OWNERIOITEM = TR.ROGUECOLUMNID
+            //                            SELECT COLUMNIDNAME  AS METAROW_NAME, ""COLUMN""  AS TYP ";
+            //**Thisis to delete rows from API Runs Table... if Needed later to void erronious runs**
+            //string qrysDel = @"DELETE [2442827] SELECT ROGUECOLUMNID";
+            //var heyDel = new HQLQuery(qrysDel);
+            //heyDel.Execute();
+            //heyDel.PrintQuery();
             //var calcTest = new CalcableGroups("[\"5\" + [\"4\" - \"2\"] + \"6\"] - [\"7\"]", new QueryMetaData());
             // var tmr3 = new Stopwatch();
             // tmr3.Start();

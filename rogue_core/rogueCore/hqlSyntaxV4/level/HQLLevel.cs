@@ -93,10 +93,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
                 //**Index any child tables that use this table as join
                 queryData.ChildTablesForIndexing(thsTable.idName).ForEach(tbl => indexes.Add(((JoinClause)tbl.joinClause).parentColumn));
                 //**Index any table that has a where clause ein this table. This hsould be moved to HQLLevel when where does
-                foreach (HQLTable thsTbl in queryData.AllTables())
-                {
-                    thsTbl.IndexedWhereColumns.Where(col => ((IColWithOwnerTable)col).colTableRefName == thsTable.idName).ToList().ForEach(col => indexes.Add(col));
-                }
+                //foreach (HQLTable thsTbl in queryData.AllTables())
+                //{
+                //    thsTbl.IndexedWhereColumns.Where(col => ((IColWithOwnerTable)col).colTableRefName == thsTable.idName).ToList().ForEach(col => indexes.Add(col));
+                //}
                 indexes = indexes.Distinct().ToList();
                 indexesPerTable.Add(thsTable.idName, indexes);
             }
@@ -135,7 +135,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         void LoadTable(HQLTable topTbl, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
         {
             indexesPerTable[topTbl.idName].ForEach(col => indexedRows.FindAddIfNotFound(col));
-            foreach (IMultiRogueRow newRow in topTbl.FilterAndStreamRows(parentLvl, AddRow))
+            foreach (IMultiRogueRow newRow in topTbl.FilterAndStreamRows(parentLvl,whereClause, AddRow))
             {
                 IndexThsRow(topTbl.idName, newRow);
             }

@@ -13,10 +13,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from.command
         public const string commandNameIDConst = "DATE_RANGE";
         public static string CodeMatchName { get { return commandNameIDConst; } }
         public override string commandNameID { get { return CodeMatchName; } }
-        public FromDateRange(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData)
-        {
-            
-        }
+        public FromDateRange(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData) { }
         protected override IEnumerable<IReadOnlyRogueRow> RunProcedure(IMultiRogueRow parentRow)
         {
             DateTime baseDate = DateTime.Parse(commandParams[0].GetValue(parentRow.tableRefRows.ToSingleEnum()));

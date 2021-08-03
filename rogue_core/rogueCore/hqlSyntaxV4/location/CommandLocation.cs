@@ -56,6 +56,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
                     return new SentimentClassification(colTxt, metaData);
                 case "GENERATE_ML_MODEL":
                     return new GenerateMLModel(colTxt, metaData);
+                case "ADD_DAYS":
+                    return new AddDays(colTxt, metaData);
                 default:
                     throw new Exception("Unknown command location type");
             }

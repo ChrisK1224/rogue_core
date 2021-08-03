@@ -21,8 +21,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
         public WhereSegment(string txt, QueryMetaData metaData) : base(txt, metaData) 
         {
             compareType = splitList[1].Key;
-            localColumn = BaseColumn.ParseColumn(splitList[0].Value, metaData);            
-            foreignColumn = new CalcableGroups(splitList[1].Value.AfterFirstSpace(), metaData);
+            localColumn = BaseColumn.ParseColumn(splitList[0].Value, metaData); 
+            //**GOT RID OF AFTER FIRST SPACE HERE NOT SURE WHY NEEDED**
+            //foreignColumn = new CalcableGroups(splitList[1].Value.AfterFirstSpace(), metaData);
+            foreignColumn = new CalcableGroups(splitList[1].Value, metaData);
             SetCompareOptions();
         }
         void SetCompareOptions()

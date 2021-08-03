@@ -26,7 +26,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         ILimit limit { get; }
         IFrom from { get; }
         internal List<Dictionary<string, IReadOnlyRogueRow>> rows { get; } = new List<Dictionary<string, IReadOnlyRogueRow>>();
-        public List<IColumn> IndexedWhereColumns { get { return whereClause.evalColumns.Where(iCol => !(iCol is ConstantColumn)).ToList(); } }
+        //public List<IColumn> IndexedWhereColumns { get { return whereClause.evalColumns.Where(iCol => !(iCol is ConstantColumn)).ToList(); } }
         //Dictionary<IColumn, IReadOnlyRogueRow> indexedRows = new Dictionary<IColumn, IReadOnlyRogueRow>();
         public IORecordID potentialTableID { get { return ((IIdableFrom)from).tableId; } }
         public HQLTable(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData)
@@ -46,7 +46,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
             //stopwatch3.Stop();
             //Console.WriteLine("TableTime " + idName + " : " + stopwatch3.ElapsedMilliseconds);
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(HQLLevel parentLvl, WhereClause whereClause, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(HQLLevel parentLvl, IWhereClause whereClause, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
         {
             foreach (var row in from.FilterAndStreamRows(limit, joinClause, whereClause, parentLvl, AddRow))
             {

@@ -11,6 +11,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     {
         //QueryMetaData metaData { get; }
         List<HQLGroup> groups = new List<HQLGroup>();
+        QueryMetaData metaData { get; }
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { GroupSplitters.withKey, GroupSplitters.withEndKey}; } }
         public HQLQuery(string qry) : base(qry, new QueryMetaData())
         {
@@ -22,7 +23,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             //{
             //    qry = "WITH DEFAULT " + qry + " STANDARD ";
             //}
-            var metaData = new QueryMetaData();
+            this.metaData = new QueryMetaData();
             //new HQLGroup(splitList[0].Value, metaData);            
             //var lastTxt = splitList[splitList.Count - 1];
             //var grpTxt = lastTxt.Value.AfterFirstKey(",");
@@ -49,7 +50,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         {
             //*print from top down
             StringBuilder strBuild = new StringBuilder();
-            foreach (IMultiRogueRow topRow in groups[groups.Count-1].levels.First().rows)
+            foreach (IMultiRogueRow topRow in metaData.TopRows())
             {
                 strBuild = LoopPrintHierachy(topRow, 0, strBuild);
             }
@@ -69,7 +70,6 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         //{
         //    metaData.PrintSegments();
         //}
-
         public override string PrintDetails()
         {
             throw new NotImplementedException();
