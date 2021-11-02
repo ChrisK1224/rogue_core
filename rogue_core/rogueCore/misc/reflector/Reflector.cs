@@ -4,10 +4,11 @@ using rogue_core.rogueCore.hqlSyntaxV4.group.convert;
 using rogueCore.hqlSyntaxV3.segments.locationColumn.columnTypes.command.executable;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Linq;
+
 namespace rogue_core.rogueCore.misc.reflector
 {
     public static class Reflector
@@ -47,6 +48,55 @@ namespace rogue_core.rogueCore.misc.reflector
             var grps = Reflector.groupConvertTypes;
             Type myType = grps[classNm];
             return (IGroupConvert)Activator.CreateInstance(myType, new object[2] { hqlTxt, metaData });
+        }
+        public static object InitiateClassByName(string className)
+        {
+            Type type = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => p.Name.ToUpper() == className.ToUpper() && !p.IsInterface && !p.IsAbstract).ToList().First();
+            
+            //Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            //types.ForEach(x => classKeys.Add(x.GetProperty("codeMatchName").GetValue(x, null).ToString(), x));
+            return Activator.CreateInstance(type);
+        }
+        public static string NameOfCallingClass()
+        {
+            string fullName;
+            Type declaringType;
+            int skipFrames = 2;
+            do
+            {
+                MethodBase method = new StackFrame(skipFrames, false).GetMethod();
+                declaringType = method.DeclaringType;
+                if (declaringType == null)
+                {
+                    return method.Name;
+                }
+                skipFrames++;
+                fullName = declaringType.FullName;
+            }
+            while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+            return fullName;
+        }
+        public static object SetModelProperties(string className, IMultiRogueRow valueRow)
+        {
+            var obj = InitiateClassByName(className);
+            var propLst = obj.GetType().GetProperties().ToList();
+            var rowLst = valueRow.GetValueList();
+            foreach(var prop in propLst)
+            {
+                prop.SetValue(obj, Convert.ChangeType(rowLst.Where(x => x.Key.ToUpper() == prop.Name.ToUpper()).First().Value, prop.PropertyType), null);
+            }
+            //foreach (var col in valueRow.GetValueList())
+            //{
+            //    PropertyInfo prop = propLst.Where(x => x.Name.ToUpper() == col.Key.ToUpper()).First();
+            //    if (null != prop && prop.CanWrite)
+            //    {
+            //        prop.SetValue(obj, Convert.ChangeType(col.Value, prop.PropertyType), null);
+            //    }
+            //}
+            return obj;
         }
     }
 }

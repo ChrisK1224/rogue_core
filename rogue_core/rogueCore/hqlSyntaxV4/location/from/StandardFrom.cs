@@ -25,25 +25,25 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
         public StandardFrom(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData)
         {
             List<string> periodParts = splitList.Where(x => x.Key == KeyNames.period).Select(x => x.Value).ToList();
-            Stopwatch bl = new Stopwatch();
-            bl.Start();
+            //Stopwatch bl = new Stopwatch();
+            //bl.Start();
             if (this.IsDirectID(tblTxt))
             {
-                tableId = new IORecordID(this.GetDirectID(tblTxt));
+                tableId = new IORecordID(tblTxt.BeforeFirstSpace());
             }
             else
             {
-                bl.Stop();
-                bl.Restart();
+                //bl.Stop();
+                //bl.Restart();
                 tableId = (periodParts.Count == 1) ? new IORecordID(BinaryDataTable.ioRecordTable.GuessTableIDByName(periodParts[0])) : BinaryDataTable.ioRecordTable.DecodeTableName(periodParts.ToArray());
-                bl.Stop();
-                Console.WriteLine("WITHIN GUESSID:" + bl.ElapsedMilliseconds);
+                //bl.Stop();
+                //Console.WriteLine("WITHIN GUESSID:" + bl.ElapsedMilliseconds);
             }            
             tableRefName = (base.GetAliasName() == "" ) ? tableId.TableName() : GetAliasName();
-            bl.Stop();
-            Console.WriteLine("WITHIN STANDARDROM:" + bl.ElapsedMilliseconds);
+            //bl.Stop();
+            //Console.WriteLine("WITHIN STANDARDROM:" + bl.ElapsedMilliseconds);
         }
-        public virtual IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public virtual IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             int rowCount = 0;
             int snapshotRowAmount = parentLvl.rows.Count;
@@ -51,10 +51,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
             {
                 foreach (IMultiRogueRow parentRow in joinClause.JoinRows(parentLvl, testRow, snapshotRowAmount))
                 {
-                    if (whereClause.CheckWhereClause(idName, testRow, parentRow))
-                    {
+                    //***GOT Rid of cwhere clause check since i think its covered later
+                    //if (whereClause.CheckWhereClause(idName, testRow, parentRow))
+                    //{
                         yield return NewRow(idName, testRow, parentRow);
-                    }
+                    //}
                 }
                 rowCount++;
             }

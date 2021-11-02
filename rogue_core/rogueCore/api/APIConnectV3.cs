@@ -675,7 +675,7 @@ public class APIConnect
                     start.Arguments = string.Format("\"{0}\" \"{1}\"", cmd, args[0]);
                     break;
                 case 2:
-                    start.Arguments = string.Format("{0} {1} {2}", cmd, args[0], args[1]);
+                    start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", cmd, args[0], args[1]);
                     break;
                 case 3:
                     start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", cmd, args[0], args[1], args[2]);

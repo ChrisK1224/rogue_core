@@ -6,7 +6,7 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.where
 {
-    public interface IWhereClause
+    public interface IWhereClause : ITempBase
     {
         public bool CheckWhereClause(string thsTblRef, IReadOnlyRogueRow thsRow, IMultiRogueRow fullRow = null);
         public bool CheckWhereClause(IMultiRogueRow fullRow);

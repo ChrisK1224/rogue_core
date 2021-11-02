@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using DayOfWeek = rogue_core.rogueCore.hqlSyntaxV4.location.column.command.DayOfWeek;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.location
 {
@@ -58,6 +59,16 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
                     return new GenerateMLModel(colTxt, metaData);
                 case "ADD_DAYS":
                     return new AddDays(colTxt, metaData);
+                case "CURRENT_EOD":
+                    return new CurrentEOD(colTxt, metaData);
+                case "ADD_SECONDS":
+                    return new AddSeconds(colTxt, metaData);
+                case "LAG":
+                    return new Lag(colTxt, metaData);
+                case "DAY_OF_WEEK":
+                    return new DayOfWeek(colTxt, metaData);
+                case "MONTH":
+                    return new Month(colTxt, metaData);
                 default:
                     throw new Exception("Unknown command location type");
             }

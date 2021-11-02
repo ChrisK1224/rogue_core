@@ -1,7 +1,9 @@
-﻿using rogue_core.rogueCore.binary;
+﻿using FilesAndFolders;
+using rogue_core.rogueCore.binary;
 using rogue_core.rogueCore.hqlSyntaxV4.location.column;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4
@@ -48,6 +50,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public string GetValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
             return calcGroups[0].RetrieveStringValue(rows);
+        }
+        public string GetValue(IMultiRogueRow row)
+        {
+            return calcGroups[0].RetrieveStringValue(row.tableRefRows.ToSingleEnum());
         }
         string LastCalcKey(int currIndex)
         {

@@ -15,12 +15,12 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.group
 {
-    public class HQLGroup : SplitSegment, IIdableFrom, IQueryableDataSet
+    public class HQLGroup : SplitSegment,IHqlGroup, IIdableFrom, IQueryableDataSet
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { GroupSplitters.convertKey, LevelSplitters.fromKey, LevelSplitters.insertKey, LevelSplitters.deleteKey }; } }
-        List<HQLLevel> _levels { get; } = new List<HQLLevel>(); 
-        public List<HQLLevel> topLevels { get { return _levels.Where(x => x.parentLvlName == "").ToList(); } }
-        public IReadOnlyCollection<HQLLevel> levels { get { return _levels; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { GroupSplitters.convertKey, LevelSplitters.fromKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.updateKey, LevelSplitters.CommandLevelKey }; } }
+        List<IHQLLevel> _levels { get; } = new List<IHQLLevel>(); 
+        public List<IHQLLevel> topLevels { get { return _levels.Where(x => x.parentLvlName == "").ToList(); } }
+        public IReadOnlyCollection<IHQLLevel> levels { get { return _levels; } }
         IGroupConvert converter { get; }
         public List<IMultiRogueRow> rows { get; set; } = new List<IMultiRogueRow>();
         public string dataSetName { get; }
@@ -29,11 +29,21 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group
         public HQLGroup(string line, QueryMetaData metaData) : base(line, metaData)
         {
             dataSetName = splitList.Where(x => x.Key == KeyNames.startKey).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
-            this.splitList.Where(x=>x.Key != KeyNames.convert && x.Key != KeyNames.startKey).ToList().ForEach(x => _levels.Add(new HQLLevel(x.Value, metaData)));            
+            this.splitList.Where(x=>x.Key != KeyNames.convert && x.Key != KeyNames.startKey).ToList().ForEach(x => _levels.Add(ParseLevel(x.Key, x.Value, metaData)));            
             metaData.AddGroup(this);
             string convertStr = this.splitList.Where(x => x.Key == KeyNames.convert).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
             string convertKey = convertStr.AfterFirstSpace();
             converter = Reflector.GetNewGroupConvert(convertKey, convertStr,dataSetName, metaData);              
+        }
+        IHQLLevel ParseLevel(string keyName, string levelTxt, QueryMetaData metaData)
+        {
+            switch (keyName)
+            {
+                case KeyNames.usingTxt:
+                    return new CommandLevel(levelTxt, metaData);
+                default:
+                    return new HQLLevel(levelTxt, metaData);
+            }
         }
         public void Fill()
         {
@@ -46,7 +56,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group
         {
             return "";
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             converter.Transform(topLevels);
             int rowCount = 0;

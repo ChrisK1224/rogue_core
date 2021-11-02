@@ -21,7 +21,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
             //encodedTableLocation = new EncodedTableLocation(tableTxt, queryStatement);
             //EncodedToTableStream = (encodedColumn.isDirectID) ? EncodedToTableStream = EncodedDirectToTableID : EncodedNonDirectToTableID;
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             int rowCount = 0;
             List<IMultiRogueRow> encodedParentRows = new List<IMultiRogueRow>(parentLvl.rows);
@@ -65,6 +65,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
         public IORecordID CalcTableID(IMultiRogueRow row)
         {
             string ColOrID = row.GetValue(encodedColumn);
+            bool isDirect = (this.IsDirectID(ColOrID));
+            EncodedIDPull = (isDirect) ? EncodedIDPull = DirectToID : NameToID;
             return EncodedIDPull(ColOrID);
         }
         protected override IORecordID NameToID(string ids)

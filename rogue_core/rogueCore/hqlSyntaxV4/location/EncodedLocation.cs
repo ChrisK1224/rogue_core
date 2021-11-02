@@ -21,9 +21,6 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
         {
             name = (GetAliasName() == "") ? metaData.NextUnnamedColumn() : GetAliasName();
             encodedColumn = BaseColumn.ParseColumn(colTxt.get_string_between_2(encodeStartKey, endKey), metaData);
-            isDirect = (this.IsDirectID(colTxt));
-            EncodedIDPull = (isDirect) ? EncodedIDPull = DirectToID : NameToID;
-            
             //*Set column Table Ref Name if possible. Required if this is a join clause column
             //if (aliasName.isNameSet)
             //{
@@ -54,9 +51,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
         }
         protected abstract IDType NameToID(string ids);
         protected abstract IDType DirectToID(string directID);
-        protected void ResetEncodedID(IDType id)
+        protected void ResetEncodedID(string ColOrID)
         {
-            ID = id;
+            bool isDirect = (this.IsDirectID(ColOrID));
+            EncodedIDPull = (isDirect) ? EncodedIDPull = DirectToID : NameToID;
+            ID = EncodedIDPull(ColOrID);
         }       
     }
 }

@@ -10,7 +10,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
 {
    public class WhereClause : SplitSegment, IWhereClause
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { WhereClauseSplitters.whereAnd, WhereClauseSplitters.whereOr, WhereClauseSplitters.whereOpenParen, WhereClauseSplitters.whereCloseParen }; } }
+        //**removed parent split keys WhereClauseSplitters.whereOpenParen, WhereClauseSplitters.whereCloseParen
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { WhereClauseSplitters.whereAnd, WhereClauseSplitters.whereOr }; } }
         List<List<KeyValuePair<string, WhereSegment>>> segmentItems = new List<List<KeyValuePair<string,WhereSegment>>>();
         //public override string[] splitters { get { return new string[4] { andMarker, orMarker, startMarker, endMarker }; } }
         public WhereClause(string whereTxt, QueryMetaData metaData) : base(whereTxt, metaData) 
@@ -22,6 +23,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
                 switch (seg.Key)
                 {
                     case KeyNames.openParenthensis:
+                    case KeyNames.startKey:
                         activeGroup = new List<KeyValuePair<string, WhereSegment>>();
                         segmentItems.Add(activeGroup);
                         activeGroup.Add(new KeyValuePair<string, WhereSegment>("", new WhereSegment(seg.Value, metaData)));

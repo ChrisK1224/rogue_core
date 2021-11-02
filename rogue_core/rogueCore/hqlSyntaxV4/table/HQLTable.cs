@@ -6,6 +6,7 @@ using rogue_core.rogueCore.hqlSyntaxV4.level;
 using rogue_core.rogueCore.hqlSyntaxV4.limit;
 using rogue_core.rogueCore.hqlSyntaxV4.location.column;
 using rogue_core.rogueCore.hqlSyntaxV4.location.from;
+using rogue_core.rogueCore.hqlSyntaxV4.update;
 using rogue_core.rogueCore.hqlSyntaxV4.where;
 using rogue_core.rogueCore.id.rogueID;
 using rogueCore.hqlSyntaxV4.join;
@@ -21,32 +22,32 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { TableSplitters.whereKey, TableSplitters.limitKey, TableSplitters.joinKey, TableSplitters.combineKey, TableSplitters.fromKey, TableSplitters.insertKey, TableSplitters.deleteKey, TableSplitters.updateKey }; } }
         public string idName { get { return from.idName.ToUpper(); } }
         public string parentTableName { get { return joinClause.parentTableName; } }
-        public IJoinClause joinClause { get; }
+        public IJoinClause joinClause { private set;  get; }
         //IWhereClause whereClause { get; }
-        ILimit limit { get; }
-        IFrom from { get; }
+        ILimit limit { set;  get; }
+        IFrom from {  set;  get; }
+        public bool IsIdableFrom { get { return from is IIdableFrom; } }
         internal List<Dictionary<string, IReadOnlyRogueRow>> rows { get; } = new List<Dictionary<string, IReadOnlyRogueRow>>();
         //public List<IColumn> IndexedWhereColumns { get { return whereClause.evalColumns.Where(iCol => !(iCol is ConstantColumn)).ToList(); } }
         //Dictionary<IColumn, IReadOnlyRogueRow> indexedRows = new Dictionary<IColumn, IReadOnlyRogueRow>();
         public IORecordID potentialTableID { get { return ((IIdableFrom)from).tableId; } }
         public HQLTable(string tblTxt, QueryMetaData metaData) : base(tblTxt, metaData)
         {
+            Initialize(metaData);
             //var stopwatch3 = new Stopwatch();
             //stopwatch3.Start(); 
-            metaData.AddTable(this);
-            //stopwatch3.Stop();
-            //Console.WriteLine("Metaddat:" + stopwatch3.ElapsedMilliseconds);
-            //stopwatch3.Restart();
-            from = ParseFromClause(splitList.Where(x => x.Key == KeyNames.from || x.Key == KeyNames.combine || x.Key == KeyNames.insert || x.Key == KeyNames.delete || x.Key == KeyNames.update).FirstOrDefault(), metaData);
-            //stopwatch3.Stop();
-            //Console.WriteLine("FROM:" + stopwatch3.ElapsedMilliseconds);
-            //whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
-            joinClause = ParseJoinClause(splitList.Where(x => x.Key == KeyNames.join).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
-            limit = ParseLimitClause(splitList.Where(x => x.Key == KeyNames.limit).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+           
             //stopwatch3.Stop();
             //Console.WriteLine("TableTime " + idName + " : " + stopwatch3.ElapsedMilliseconds);
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(HQLLevel parentLvl, IWhereClause whereClause, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
+        protected void Initialize(QueryMetaData metaData)
+        {
+            metaData.AddTable(this);
+            from = ParseFromClause(splitList.Where(x => x.Key == KeyNames.from || x.Key == KeyNames.combine || x.Key == KeyNames.insert || x.Key == KeyNames.delete || x.Key == KeyNames.update).FirstOrDefault(), metaData);
+            joinClause = ParseJoinClause(splitList.Where(x => x.Key == KeyNames.join).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            limit = ParseLimitClause(splitList.Where(x => x.Key == KeyNames.limit).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+        }
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(IHQLLevel parentLvl, IWhereClause whereClause, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
         {
             foreach (var row in from.FilterAndStreamRows(limit, joinClause, whereClause, parentLvl, AddRow))
             {
@@ -80,18 +81,18 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
                 return false;
             }
         }
-        IWhereClause ParseWhereClause(string whereTxt, QueryMetaData metaData)
-        {
-            whereTxt = whereTxt.Trim();
-            if (whereTxt == "")
-            {
-                return new EmptyWhereClause(whereTxt, metaData);
-            }
-            else
-            {
-                return new WhereClause(whereTxt, metaData);
-            }
-        }
+        //IWhereClause ParseWhereClause(string whereTxt, QueryMetaData metaData)
+        //{
+        //    whereTxt = whereTxt.Trim();
+        //    if (whereTxt == "")
+        //    {
+        //        return new EmptyWhereClause(whereTxt, metaData);
+        //    }
+        //    else
+        //    {
+        //        return new WhereClause(whereTxt, metaData);
+        //    }
+        //}
         IJoinClause ParseJoinClause(string joinTxt, QueryMetaData metaData)
         {
             joinTxt = joinTxt.Trim();
@@ -150,6 +151,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
                 //newTable = new HQLInsert(hql, metaData);
                 newTable = HQLInsert.GetInsertType(hql, metaData);
             }
+            else if (hqlPair.Key == KeyNames.update)
+            {
+                //newTable = new HQLInsert(hql, metaData);
+                newTable = new HQLUpdate(hql, metaData);
+            }
             else if (hqlPair.Key == KeyNames.delete)
             {
                 newTable = new HQLDelete(hql, metaData);
@@ -177,5 +183,15 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         {
             return "idName:" + idName + ",ParentTableName:" + parentTableName;
         }
+        public IEnumerable<string> SyntaxSuggestions()
+        {
+            return new List<string>();
+        }
+        //public void LoadSyntaxParts(IMultiRogueRow parentRow, ISyntaxPartCommands syntaxCommands)
+        //{
+        //    from.LoadSyntaxParts(parentRow, syntaxCommands);
+        //    joinClause.LoadSyntaxParts(parentRow, syntaxCommands);
+        //    limit.LoadSyntaxParts(parentRow, syntaxCommands);
+        //}
     }
 }

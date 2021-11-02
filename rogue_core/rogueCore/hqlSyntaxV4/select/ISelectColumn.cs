@@ -6,7 +6,7 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.select
 {
-    public interface ISelectColumn
+    public interface ISelectColumn  : ITempBase
     {
         public string columnName { get; }
         public string upperColumnName { get; }

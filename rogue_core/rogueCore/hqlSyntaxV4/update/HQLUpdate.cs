@@ -2,7 +2,6 @@
 using rogue_core.rogueCore.hqlSyntaxV4.level;
 using rogue_core.rogueCore.hqlSyntaxV4.limit;
 using rogue_core.rogueCore.hqlSyntaxV4.location.from;
-using rogue_core.rogueCore.hqlSyntaxV4.table;
 using rogue_core.rogueCore.hqlSyntaxV4.where;
 using rogue_core.rogueCore.id.rogueID;
 using rogueCore.hqlSyntaxV4.join;
@@ -16,19 +15,20 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.update
 {
     public class HQLUpdate : SplitSegment, IFrom, IIdableFrom
     {
-        Dictionary<ColumnRowID, string> updateFields = new Dictionary<ColumnRowID, string>();
+        Dictionary<ColumnRowID, string> updateFields { get; } = new Dictionary<ColumnRowID, string>();
         protected ICalcableFromId tableFrom { get; }
         public IORecordID tableId { get { return ((IIdableFrom)tableFrom).tableId; } }
-        public override List<SplitKey> splitKeys => throw new NotImplementedException();
-        public string idName => throw new NotImplementedException();
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>(); } }
+        public string idName { get; }
+        //* TODO HQLINsert shouldn't have tableID avaialbe or cant be encoded***
         Dictionary<IORecordID, IRogueTable> writeTables = new Dictionary<IORecordID, IRogueTable>();
-        public HQLUpdate(string txt, QueryMetaData metaData) : base(txt, metaData)
+        public HQLUpdate(string txt, QueryMetaData metaData) : base(txt, metaData) 
         {
             
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
-            //**UNTESTED
+            //**UNTESTED 
             int rowCount = 0;
             int snapshotRowAmount = parentLvl.rows.Count;
             foreach(IMultiRogueRow parentRow in parentLvl.rows)

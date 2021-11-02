@@ -96,7 +96,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
         {
             foreach (var col in selectRow.selectColumns)
             {
-                yield return new KeyValuePair<string, string>(col.columnName, col.GetValue(tableRefRows.ToSingleEnum()));
+                yield return new KeyValuePair<string, string>(col.columnName, col.GetValue(tableRefRows.ToSingleEnum()));   
             }
         }
         public string GetValueAt(int index)

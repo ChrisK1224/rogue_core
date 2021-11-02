@@ -16,13 +16,16 @@ namespace files_and_folders
             using (Process process = Process.Start("cmd.exe", cmd))
             {
                 process.WaitForExit();
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
-                    string returnData = reader.ReadToEnd();// Here is the result of StdOut(for example: print "test")
-                    process.WaitForExit();
-                    return returnData;
-                }
+                //string stderr = process.StandardOutput.ReadToEnd(); // Here are the exceptions from our Python script
+                //string returnData = reader.ReadToEnd();// Here is the result of StdOut(for example: print "test")
+                return "";
+                //using (StreamReader reader = process.StandardOutput)
+                //{
+                //    string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
+                //    string returnData = reader.ReadToEnd();// Here is the result of StdOut(for example: print "test")
+                //    process.WaitForExit();
+                //    return returnData;
+                //}
             }
         }
         public static string RunCommandOLD(string cmdTxt)

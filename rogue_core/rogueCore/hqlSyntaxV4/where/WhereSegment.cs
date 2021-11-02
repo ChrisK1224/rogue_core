@@ -61,15 +61,35 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.where
         }
         Boolean NotEqualCompare(String value, string compareVal)
         {
-            return !compareVal.ToUpper().Equals(value.ToUpper());
+            return !compareVal.ToUpper().Equals(value.ToUpper());         
         }
         Boolean GreaterThanCompare(String value, string compareVal)
         {
-            return (double.Parse(value) > double.Parse(compareVal));
+            //return (double.Parse(value) > double.Parse(compareVal));
+            double testOne;
+            double testTwo;
+            if (double.TryParse(value, out testOne) && double.TryParse(compareVal, out testTwo))
+            {
+                return (double.Parse(value) > double.Parse(compareVal));
+            }
+            else
+            {
+                return false;
+            }
         }
         Boolean LessThanCompare(String value, string compareVal)
         {
-            return (double.Parse(value) < double.Parse(compareVal));
+            //return (double.Parse(value) < double.Parse(compareVal));
+            double testOne;
+            double testTwo;
+            if (double.TryParse(value, out testOne) && double.TryParse(compareVal, out testTwo))
+            {
+                return (double.Parse(value) < double.Parse(compareVal));
+            }
+            else
+            {
+                return false;
+            }
         }
         //compareTypes TempEnumCheck(string val)
         //{

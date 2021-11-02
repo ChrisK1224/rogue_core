@@ -24,12 +24,12 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group.convert
         {
             return ", CSV Converter, ";
         }
-        public IEnumerable<IReadOnlyRogueRow> Transform(List<HQLLevel> topLevels)
+        public IEnumerable<IReadOnlyRogueRow> Transform(List<IHQLLevel> topLevels)
         {
             string path = @"C:\Users\chris\Desktop\blah.csv";
             StringBuilder csvBuilder = new StringBuilder();
-            csvBuilder.AppendLine("\"" + String.Join("\",\"", topLevels[0].columnNames)  + "\"");
-            foreach(var row in topLevels[0].rows)
+            csvBuilder.AppendLine("\"" + String.Join("\",\"", topLevels[0].ColumnNames())  + "\"");
+            foreach(var row in topLevels[0].filteredRows)
             {
                 csvBuilder.AppendLine("\"" + String.Join("\",\"", row.GetValueList().ToList().Select(x => x.Value)) + "\"");
             }

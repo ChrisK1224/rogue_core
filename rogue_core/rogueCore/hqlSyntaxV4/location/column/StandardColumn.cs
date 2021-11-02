@@ -19,7 +19,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column
         {
             List<string> periodParts = splitList.Where(x => x.Key == KeyNames.period).Select(x => x.Value).ToList();
             colTableRefName = periodParts.Count == 2 ? periodParts[0].ToUpper() : metaData.GuessParentTableRefName(periodParts[0].ToUpper());
-            columnRowID = (this.IsDirectID(colTxt)) ? new ColumnRowID(this.GetDirectID(colTxt)) : metaData.GetColumnByParentAndColName(colTableRefName, periodParts[periodParts.Count -1]);
+            columnRowID = (this.IsDirectID(colTxt)) ? new ColumnRowID(colTxt) : metaData.GetColumnByParentAndColName(colTableRefName, periodParts[periodParts.Count -1]);
             columnName = (base.GetAliasName() == "") ? BinaryDataTable.columnTable.GetColumnNameByID(columnRowID) : base.GetAliasName();
         }
         public virtual string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> parentRows)

@@ -71,7 +71,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.insert
         {
             return "IdName:" + idName;
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             int rowCount = 0;
             int snapshotRowAmount = parentLvl.rows.Count;

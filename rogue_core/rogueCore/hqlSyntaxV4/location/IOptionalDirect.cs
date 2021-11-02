@@ -13,11 +13,20 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location
     {
         public static bool IsDirectID(this IOptionalDirect dir, string txt)
         {
-            return (txt.Contains("[") && txt.Contains("]")) ? true : false;
+            txt = txt.BeforeFirstSpace();
+            if (int.TryParse(txt, out int value))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            //return (txt.Contains("[") && txt.Contains("]")) ? true : false;
         }
-        public static string GetDirectID(this IOptionalDirect dir, string txt)
-        {
-            return txt.get_string_between_2("[", "]");
-        }
+        //public static string GetDirectID(this IOptionalDirect dir, string txt)
+        //{
+        //    return txt.get_string_between_2("[", "]");
+        //}
     }
 }

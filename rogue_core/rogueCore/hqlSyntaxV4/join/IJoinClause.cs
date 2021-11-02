@@ -7,13 +7,13 @@ using rogue_core.rogueCore.hqlSyntaxV4.level;
 
 namespace rogueCore.hqlSyntaxV4.join
 {
-    public interface IJoinClause
+    public interface IJoinClause : ITempBase
     {
         //public ILocationColumn parentColumn { get; }
         //public Boolean joinAll { get; }
         public string parentTableName { get; }
         //public bool isJoinSet { get; }
-        public IEnumerable<IMultiRogueRow> JoinRows(HQLLevel lvl, IReadOnlyRogueRow row, int rowCount);
+        public IEnumerable<IMultiRogueRow> JoinRows(IHQLLevel lvl, IReadOnlyRogueRow row, int rowCount);
         //public void LoadSyntaxParts(IMultiRogueRow parentRow, ISyntaxPartCommands syntaxCommands);
         //public void PreFill(QueryMetaData metaData, string assumedTblName);
         //public List<string> UnsetParams();

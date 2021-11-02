@@ -27,13 +27,13 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
         {
 
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause,HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause,IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             int rowCount = 0;
             int snapshotRowAmount = parentLvl.rows.Count;
-            foreach (IMultiRogueRow topRow in parentLvl.rows)
+            foreach (IMultiRogueRow topRow in parentLvl.rows.TakeWhile(x => rowCount != limit.limitRows))
             {
-                foreach (IReadOnlyRogueRow testRow in RunExecProcedure(RunProcedure, topRow).TakeWhile(x => rowCount != limit.limitRows))
+                foreach (IReadOnlyRogueRow testRow in RunExecProcedure(RunProcedure, topRow))
                 {
                     //**SHIT CODE to handle the situation of multiple matching with join all since it needs the parent row to make the child row so when matchingto all rows you get dups
                     if (joinClause is JoinToClause)
@@ -42,6 +42,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
                         if (whereClause.CheckWhereClause(idName, testRow, topRow))
                         {
                             yield return NewRow(idName, testRow, topRow);
+                            rowCount++;
                         }                        
                     }
                     else
@@ -51,11 +52,12 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
                             if (whereClause.CheckWhereClause(idName, testRow, parentRow))
                             {
                                 yield return NewRow(idName, testRow, parentRow);
+                                rowCount++;
                             }
                         }
                     }
                     
-                    rowCount++;
+                   
                 }
             }
         }
@@ -67,6 +69,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
                     return new FromDateRange(fullTxt, metaData);
                 case FromRunApi.commandNameIDConst:
                     return new FromRunApi(fullTxt, metaData);
+                case RunMLCommand.commandNameIDConst:
+                    return new RunMLCommand(fullTxt, metaData);
+                case RowToColumn.commandNameIDConst:
+                    return new RowToColumn(fullTxt, metaData);
                 default:
                     throw new Exception("Unknown table command");
             }

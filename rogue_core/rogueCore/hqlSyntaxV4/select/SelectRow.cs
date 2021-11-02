@@ -15,12 +15,38 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.select
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LocationSplitters.colSeparator }; } }
         public SelectRow(string rowTxt, QueryMetaData metaData) : base(rowTxt, metaData)
         {
-            splitList.ToList().ForEach(x => selectColumns.Add(new SelectColumn(x.Value, metaData)));
+            splitList.ToList().ForEach(x => AddColumn(x.Value, metaData));
             selectColumns.ForEach(x => columnsByName.Add(x.upperColumnName, x));
+        }
+        void AddColumn(string rowTxt, QueryMetaData metaData)
+        {
+            rowTxt = rowTxt.Trim();
+            if (rowTxt == "*")
+            {
+                var cols = metaData.CurrentLevelColumns();
+                foreach(var col in cols)
+                {
+                    col.Value.ForEach(x => selectColumns.Add(new DirectColumn(col.Key, x.ColumnIDName(), x.rowID)));
+                }                
+            }
+            else if(rowTxt.Contains(".*"))
+            {
+                string tblName = rowTxt.BeforeFirstChar('.');
+                var cols = metaData.CurrentLevelSingleTableColumns(tblName);
+                cols.ForEach(x => selectColumns.Add(new DirectColumn(tblName, x.ColumnIDName(), x.rowID)));
+            }
+            else
+            {
+                selectColumns.Add(new SelectColumn(rowTxt, metaData));
+            }            
         }
         public override string PrintDetails()
         {
             return "";
+        }
+        public IEnumerable<string> SyntaxSuggestions()
+        {
+            return new List<string>();
         }
     }
 }

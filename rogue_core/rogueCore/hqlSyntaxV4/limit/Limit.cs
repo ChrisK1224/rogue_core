@@ -38,5 +38,9 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.limit
         {
             return "";
         }
+        public IEnumerable<string> SyntaxSuggestions()
+        {
+            return new List<string>();
+        }
     }
 }

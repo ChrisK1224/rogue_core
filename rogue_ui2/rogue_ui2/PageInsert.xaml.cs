@@ -1,10 +1,7 @@
 ﻿using rogue_core.rogueCore.id.rogueID;
 using rogue_core.rogueCore.ioObject;
 using rogue_core.rogueCore.syntaxCommand;
-using rogueCore.hqlSyntaxV3.filledSegments;
-using rogueCore.hqlSyntaxV3.row;
-using rogueCore.hqlSyntaxV3.segments;
-using rogueCore.hqlSyntaxV3.segments.update;
+ 
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,10 +16,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static rogueCore.hqlSyntaxV3.IntellsenseDecor;
+//using static rogueCore.hqlSyntaxV3.IntellsenseDecor;
 using System.Diagnostics;
 using rogue_core.rogueCore.binary;
 using GroupDocs.Classification;
+using rogue_core.rogueCore.hqlSyntaxV4;
+using rogue_core.rogueCore.hqlSyntaxV4.update.updateTypes;
+using ISyntaxPartCommands = rogue_core.rogueCore.hqlSyntaxV4.ISyntaxPartCommands;
+using static rogue_core.rogueCore.hqlSyntaxV4.IntellsenseDecor;
 
 namespace rogue_ui2
 {
@@ -31,6 +32,7 @@ namespace rogue_ui2
     /// </summary>
     public partial class PageInsert : Page
     {
+        private ListBox AssistListBox = new ListBox();
         List<IValuedElement> insertControls;
         string insertID;
         string activeObjectID;
@@ -97,8 +99,8 @@ namespace rogue_ui2
         }
         void LoadMenu()
         {            
-            SelectHQLStatement dbQry = new SelectHQLStatement(menuQry);
-            dbQry.Fill();
+            var dbQry = new HQLQuery(menuQry);
+            dbQry.Execute();
             List<ItemsControl> lstItems = new List<ItemsControl>();
             treMenu.Items.Clear();
             lstItems.Add(treMenu);
@@ -141,7 +143,7 @@ namespace rogue_ui2
             {
                 lstItems.RemoveAt(lstItems.Count - 1);
             };
-            dbQry.IterateRows(OpenWPFControl, CloseWPFControl);
+            dbQry.IterateRows2(OpenWPFControl, CloseWPFControl);
         }
         void LoadInsertContent(string name, string dbTyp, string dbItemID)
         {
@@ -191,7 +193,9 @@ namespace rogue_ui2
                 case "TABLE":
                     int currRow = 0;
                     insertID = dbItemID;
-                    foreach (var row in new SelectHQLStatement("FROM COLUMN WHERE OWNERIOITEM  = \"" + dbItemID.ToString() + "\" SELECT * FROM COLUMNENUMERATIONS AS CE JOIN ON CE.COLUMN_OID = COLUMN.ROGUECOLUMNID SELECT *").Fill().TopRows())
+                    var runQry = new HQLQuery("FROM COLUMN WHERE OWNERIOITEM  = \"" + dbItemID.ToString() + "\" SELECT * FROM COLUMNENUMERATIONS AS CE JOIN ON CE.COLUMN_OID = COLUMN.ROGUECOLUMNID SELECT *");
+                    runQry.Execute();
+                    foreach (var row in runQry.topRows)
                     {
                         string colNM = row.GetValue("COLUMNIDNAME");
                         string colID = row.GetValue("ROGUECOLUMNID");
@@ -242,6 +246,7 @@ namespace rogue_ui2
                     {
                         var txtBox = new MyTextBox();
                         txtBox.Width = 200;
+                        txtBox.AcceptsReturn = true;
                         txtBox.Tag = colRow.GetValue("ROGUECOLUMNID");
                         Grid.SetRow(txtBox, currRow);
                         Grid.SetColumn(txtBox, 1);
@@ -268,12 +273,13 @@ namespace rogue_ui2
                     //string Qry = "FROM IORECORDS AS COLID WHERE NAME_COLUMN_OID != \"\" AND COLID.ROGUECOLUMNID = \"" + colRow.GetValue("ParentTableID") + "\" AND COLUMN.IS_EDITABLE != \"false\" SELECT \"dropdownlist\" AS CONTROLNAME  FROM [" +colRow.GetValue("ParentTableID") +  "] AS PARENTCOLENUM JOIN ON * = COLID.ROGUECOLUMNID SELECT PARENTCOLENUM.[{COLID.NAME_COLUMN_OID}] as COL_TXT, PARENTCOLENUM.ROGUECOLUMNID AS VALUEID";
                     //**RECENT RISKY CHANGE got rid of AND COLUMN.IS_EDITABLE != \"false\" not sure how this is working since not linked to COLUMN table.
                     string bll = colRow.GetValue("ParentTableID");
-                    string Qry = "FROM IORECORDS AS COLID WHERE NAME_COLUMN_OID != \"\" AND COLID.ROGUECOLUMNID = \"" + colRow.GetValue("ParentTableID") + "\"  SELECT \"dropdownlist\" AS CONTROLNAME  FROM [" + colRow.GetValue("ParentTableID") + "] AS PARENTCOLENUM JOIN ON * = COLID.ROGUECOLUMNID SELECT PARENTCOLENUM.[{COLID.NAME_COLUMN_OID}] as COL_TXT, PARENTCOLENUM.ROGUECOLUMNID AS VALUEID";
+                    string Qry = "FROM IORECORDS AS COLID WHERE NAME_COLUMN_OID != \"\" AND COLID.ROGUECOLUMNID = \"" + colRow.GetValue("ParentTableID") + "\"  SELECT \"dropdownlist\" AS CONTROLNAME  FROM " + colRow.GetValue("ParentTableID") + " AS PARENTCOLENUM JOIN TO COLID SELECT PARENTCOLENUM.{COLID.NAME_COLUMN_OID} as COL_TXT, PARENTCOLENUM.ROGUECOLUMNID AS VALUEID";
                     var ddlRef = new MyDropDownList();
-                    var runQry = new SelectHQLStatement(Qry).Fill();
-                    if(runQry.TopRows().ToList().Count > 0)
+                    var runQry = new HQLQuery(Qry);
+                    runQry.Execute();
+                    if(runQry.topRows.ToList().Count > 0)
                     {
-                        foreach (var enumRow in runQry.TopRows().First().childRows)
+                        foreach (var enumRow in runQry.topRows.First().childRows)
                         {
                             string test = enumRow.GetValue("COL_TXT");
                             string balh = enumRow.GetValue("VALUEID");
@@ -291,6 +297,7 @@ namespace rogue_ui2
         }
         void LoadQueryResults()
         {
+            treResults.Items.Clear();
             List<ItemsControl> lstItems = new List<ItemsControl>();
             lstItems.Add(treResults);
             Action<IMultiRogueRow> openResult = (row) =>
@@ -311,14 +318,18 @@ namespace rogue_ui2
             {
                 lstItems.RemoveAt(lstItems.Count - 1);   
             };
-            new SelectHQLStatement(txtSyntax.Content).Fill().IterateRows(openResult, closeResult);
+            var qry = new HQLQuery(txtSyntax.Content);
+            qry.Execute();
+            qry.PrintQuery();
+            qry.IterateRows2(openResult, closeResult);
         }
         void LoadTableData(string rogueID, string txtWhere = "")
         {
             string whreTxt = (txtWhere != "") ? txtWhere : txtWhereClause.Text;
             Stopwatch tmr = new Stopwatch();
             tmr.Start();
-            var qry = new SelectHQLStatement("FROM [" + rogueID + "] AS TBL @WHERE SELECT * ".Replace("@WHERE", whreTxt)).Fill();
+            var qry = new HQLQuery("FROM " + rogueID + " AS TBL @WHERE SELECT * ".Replace("@WHERE", whreTxt));
+            qry.Execute();
             tmr.Stop();
             string initFill = (tmr.ElapsedMilliseconds).ToString();
             string fillTicks = (tmr.ElapsedTicks).ToString();
@@ -392,9 +403,9 @@ namespace rogue_ui2
             //       FROM ""PARAM_BOX_DIVPADDING"" JOIN TO PARAM_BOX SELECT ""margin"" as ATTRIBUTETYPE,""attribute"" AS PARENTRELATION,""25"" AS ATTRIBUTEVALUE
             //       FROM EXECUTE(UI_PARAMETER_FIELDS, ""{0}"") AS QRYUNSETPARAMS JOIN TO PARAM_BOX";
             //string finalQry = string.Format(template, qry);
-            SelectHQLStatement statement = new SelectHQLStatement(qry);
+            var statement = new HQLQuery(qry);
             var syntaxCMD = new WPFSyntaxCommands(txtSyntax);
-            statement.GenerateIntellisenseParts(new ManualMultiRogueRow(), syntaxCMD);
+            //statement.GenerateIntellisenseParts(new ManualMultiRogueRow(), syntaxCMD);
             //statement.Fill();            
             //Action<IMultiRogueRow> NewQueryTextControl = (row) =>
             //{
@@ -421,6 +432,7 @@ namespace rogue_ui2
         private void txtSyntax_TextChanged(object sender, TextChangedEventArgs e)
         {
             string txt = txtSyntax.Content;
+            
         }
         void IntellTest()
         {
@@ -449,7 +461,15 @@ namespace rogue_ui2
         }
         private void btnRunQuery_Click(object sender, RoutedEventArgs e)
         {
-            LoadQueryResults();
+            try
+            {
+                LoadQueryResults();
+            }
+            catch(Exception ex)
+            {
+                string bll = ex.ToString();
+            }
+            
         }
         private void btnInsertObj_Click(object sender, RoutedEventArgs e)
         {
@@ -459,9 +479,9 @@ namespace rogue_ui2
         void UpdateRow(ColumnRowID colRowID, string rowID, string newValue)
         {
             IORecordID updateTableID = new IORecordID(colRowID.ToOwnerIORecord());
-            UpdateHQLStatement updateStatement = new UpdateHQLStatement(updateTableID);            
+            var updateStatement = new ManualUpdate(updateTableID, new DataRowID(rowID.ToInt()));            
             updateStatement.AddUpdateField(colRowID, newValue);
-            updateStatement.AddWhereClause(-1012, rowID);
+            //updateStatement.AddWhereClause(-1012, rowID);
             //updateStatement.Fill();
             updateStatement.Execute();
             //String tableID = insertID;
@@ -475,6 +495,11 @@ namespace rogue_ui2
             //    updateStatement.AddWhereClause(-1012, rowID);
             //    updateStatement.Fill();
             //}
+        }
+        //private ListBox AssistListBox = new ListBox();
+        private void txtSyntax_Loaded(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
     class WPFSyntaxCommands : ISyntaxPartCommands
@@ -490,7 +515,95 @@ namespace rogue_ui2
             txtBox.AcceptsTab = true;
             
         }
-        public IMultiRogueRow GetLabel(IMultiRogueRow parentRow, string txt, MyColors myColor = MyColors.black, Boldness boldness = Boldness.none, FontSize fontSize = FontSize.regular, rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline isUnderlined = rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline.none)
+        //public IMultiRogueRow GetLabel(IMultiRogueRow parentRow, string txt, MyColors myColor = MyColors.black, Boldness boldness = Boldness.none, FontSize fontSize = FontSize.regular, rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline isUnderlined = rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline.none)
+        //{
+        //    currRows.Add(parentRow);
+        //    TextRange tr = new TextRange(txtBox.Document.ContentEnd, txtBox.Document.ContentEnd);
+        //    //tr.ApplyPropertyValue(TextElement.FontSizeProperty, 10);
+        //    tr.Text = txt.Replace("&nbsp;", " ");
+        //    SolidColorBrush setColor;
+        //    switch (myColor)
+        //    {
+        //        case MyColors.blue:
+        //            setColor = Brushes.Blue;
+        //            break;
+        //        case MyColors.green:
+        //            setColor = Brushes.Green;
+        //            break;
+        //        case MyColors.orange:
+        //            setColor = Brushes.Orange;
+        //            break;
+        //        case MyColors.red:
+        //            setColor = Brushes.Red;
+        //            break;
+        //        case MyColors.yellow:
+        //            setColor = Brushes.Yellow;
+        //            break;
+        //        default:
+        //            setColor = Brushes.Black;
+        //            break;
+        //    }
+        //    double setFontSize = 12;
+        //    switch (fontSize)
+        //    {
+        //        case FontSize.large:
+        //            setFontSize = 16;
+        //            break;
+        //        case FontSize.regular:
+        //            setFontSize = 12;
+        //            break;
+        //        case FontSize.small:
+        //            setFontSize = 10;
+        //            break;
+        //        case FontSize.xLarge:
+        //            setFontSize = 20;
+        //            break;
+        //        case FontSize.xxLlarge:
+        //            setFontSize = 25;
+        //            break;
+        //    }
+        //    switch (boldness)
+        //    {
+        //        case Boldness.bolder:
+        //            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.SemiBold);
+        //            break;
+        //        case Boldness.bold:
+        //            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+        //            break;
+        //    }
+        //    if (isUnderlined == rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline.underline)
+        //    {
+        //        tr.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
+        //    }
+        //    tr.ApplyPropertyValue(TextElement.ForegroundProperty, setColor);
+        //    tr.ApplyPropertyValue(TextElement.FontSizeProperty, setFontSize);
+        //    //int i = parentRow.levelNum;
+        //    return new ManualMultiRogueRow();
+        //}
+        public IMultiRogueRow IndentedGroupBox(IMultiRogueRow parentRow, int levelNum)
+        {
+            currLevel = levelNum;
+            if (!isFirst)
+            {
+                txtBox.AppendText("\r");
+                txtBox.AppendText("\r");                
+            }            
+            for (int i = 1; i < currLevel; i++)
+            {
+                txtBox.AppendText("\t");
+            }
+            isFirst = false;
+            return new ManualMultiRogueRow();
+        }
+        public void BreakLine(IMultiRogueRow parentRow)
+        {
+            txtBox.AppendText("\r");
+            for (int i = 1; i < currLevel; i++)
+            {
+                txtBox.AppendText("\t");
+            }
+        }
+        public IMultiRogueRow GetLabel(IMultiRogueRow parentRow, string txt, MyColors myColor = MyColors.black, Boldness boldness = Boldness.none, FontSize fontSize = FontSize.regular, IntellsenseDecor.Underline isUnderlined = IntellsenseDecor.Underline.none)
         {
             currRows.Add(parentRow);
             TextRange tr = new TextRange(txtBox.Document.ContentEnd, txtBox.Document.ContentEnd);
@@ -546,7 +659,7 @@ namespace rogue_ui2
                     tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
                     break;
             }
-            if (isUnderlined == rogueCore.hqlSyntaxV3.IntellsenseDecor.Underline.underline)
+            if (isUnderlined == IntellsenseDecor.Underline.underline)
             {
                 tr.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
             }
@@ -554,29 +667,6 @@ namespace rogue_ui2
             tr.ApplyPropertyValue(TextElement.FontSizeProperty, setFontSize);
             //int i = parentRow.levelNum;
             return new ManualMultiRogueRow();
-        }
-        public IMultiRogueRow IndentedGroupBox(IMultiRogueRow parentRow, int levelNum)
-        {
-            currLevel = levelNum;
-            if (!isFirst)
-            {
-                txtBox.AppendText("\r");
-                txtBox.AppendText("\r");                
-            }            
-            for (int i = 1; i < currLevel; i++)
-            {
-                txtBox.AppendText("\t");
-            }
-            isFirst = false;
-            return new ManualMultiRogueRow();
-        }
-        public void BreakLine(IMultiRogueRow parentRow)
-        {
-            txtBox.AppendText("\r");
-            for (int i = 1; i < currLevel; i++)
-            {
-                txtBox.AppendText("\t");
-            }
         }
     }
 }

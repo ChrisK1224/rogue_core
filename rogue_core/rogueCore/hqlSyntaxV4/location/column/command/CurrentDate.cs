@@ -15,7 +15,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
         }
         public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {
-            return DateTime.Today.ToString("yyyy-MM-dd");
+            return DateTime.Today.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

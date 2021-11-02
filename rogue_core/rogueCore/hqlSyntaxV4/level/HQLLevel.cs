@@ -4,6 +4,7 @@ using rogue_core.rogueCore.binary;
 using rogue_core.rogueCore.hqlSyntaxV4.classify;
 using rogue_core.rogueCore.hqlSyntaxV4.insert;
 using rogue_core.rogueCore.hqlSyntaxV4.location.column;
+using rogue_core.rogueCore.hqlSyntaxV4.order;
 using rogue_core.rogueCore.hqlSyntaxV4.row;
 using rogue_core.rogueCore.hqlSyntaxV4.select;
 using rogue_core.rogueCore.hqlSyntaxV4.table;
@@ -17,21 +18,24 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.level
 {
-    public class HQLLevel : SplitSegment, IQueryableDataSet
+    public class HQLLevel : SplitSegment,IHQLLevel
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey }; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.havingKey, LevelSplitters.orderKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.CommandLevelKey}; } }
         public List<IMultiRogueRow> rows { get; set; } = new List<IMultiRogueRow>();
+        public List<IMultiRogueRow> filteredRows { get; set; }
         public string dataSetName { get { return lvlName.ToUpper(); } }
         public string lvlName { get; }
         HQLTable levelTable { get { return tables[0]; } }
         public string parentLvlName { get; }
         public List<HQLTable> tables { get; } = new List<HQLTable>();
-        List<HQLLevel> childLevels = new List<HQLLevel>();
-        HQLLevel parentLevel { get; }
-        SelectRow selectRow { get; }
+        List<IHQLLevel> childLevels = new List<IHQLLevel>();
+        IHQLLevel parentLevel { get; }
+        public SelectRow selectRow { get; }
         public List<string> columnNames { get { return selectRow.selectColumns.Select(x => x.columnName).ToList(); } }
         IClassify classify { get; }
         IWhereClause whereClause { get; }
+        IWhereClause havingClause { get; }
+        IOrderBy orderBy { get; }
         public int levelNum { get; }
         public QueryMetaData queryData { get; }
         public Dictionary<string, List<IColumn>> indexesPerTable { private get; set; } = new Dictionary<string, List<IColumn>>();
@@ -39,15 +43,19 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public HQLLevel(string lvlTxt, QueryMetaData metaData) : base(lvlTxt, metaData)
         {
             this.queryData = metaData;
-            splitList.Where(x => x.Key != KeyNames.select &&  x.Key != KeyNames.where && x.Key != KeyNames.classify).ToList().ForEach(x => tables.Add(new HQLTable(x.Value, metaData)));
-            var rowTxt = splitList.Where(x => x.Key == KeyNames.select).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
-            selectRow = new SelectRow(rowTxt, metaData);
-            classify = ParseClassifyClause(splitList.Where(x => x.Key == KeyNames.classify).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
-            whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            splitList.Where(x => x.Key != KeyNames.select &&  x.Key != KeyNames.where && x.Key != KeyNames.having && x.Key != KeyNames.classify && x.Key != KeyNames.order).ToList().ForEach(x => tables.Add(new HQLTable(x.Value, metaData)));
+            
             lvlName = levelTable.idName;
             parentLvlName = queryData.ParentLevel(levelTable.joinClause.parentTableName).lvlName;
             parentLevel = metaData.ParentLevel(parentLvlName);
             levelNum = metaData.AddLevel(this);
+
+            var rowTxt = splitList.Where(x => x.Key == KeyNames.select).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
+            selectRow = new SelectRow(rowTxt, metaData);
+            classify = ParseClassifyClause(splitList.Where(x => x.Key == KeyNames.classify).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            orderBy = ParseOrder(splitList.Where(x => x.Key == KeyNames.order).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+            havingClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.having).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
         }
         HQLLevel(QueryMetaData metaData) : base("", metaData) 
         { 
@@ -85,6 +93,18 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
                 return new Classify(classifyTxt, metaData);
             }
         }
+        IOrderBy ParseOrder(string classifyTxt, QueryMetaData metaData)
+        {
+            classifyTxt = classifyTxt.Trim();
+            if (classifyTxt == "")
+            {
+                return new EmptyOrderBy(classifyTxt, metaData);
+            }
+            else
+            {
+                return new OrderBy(classifyTxt, metaData);
+            }
+        }
         internal void InitializeIndexedRows()
         {
             foreach (var thsTable in tables)
@@ -101,7 +121,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
                 indexesPerTable.Add(thsTable.idName, indexes);
             }
         }
-        public void AddChildLevel(HQLLevel lvl)
+        public void AddChildLevel(IHQLLevel lvl)
         {
             childLevels.Add(lvl);
         }
@@ -109,30 +129,39 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         {
             InitializeIndexedRows();
             LoadTable(levelTable, parentLevel, NewLevelRow);
-            //LoadTable2(levelTable, parentLevel);
             for (int i = 1; i < tables.Count; i++)
             {
                 LoadTable(tables[i], this, MergeWithLevelRow);
-                //LoadTable2(tables[i], this);
             }
-            for(int i = rows.Count-1; i >= 0; i--)
+            orderBy.OrderRows(rows);
+            filteredRows = new List<IMultiRogueRow>(rows);
+            for(int i = filteredRows.Count-1; i >= 0; i--)
             {
-                if (!whereClause.CheckWhereClause(rows[i]))
+                if (!whereClause.CheckWhereClause(filteredRows[i]))
                 {
-                    rows[i].RemoveFromParent();
-                    rows.Remove(rows[i]);
+                    filteredRows[i].RemoveFromParent();                    
+                    rows.Remove(filteredRows[i]);
+                    filteredRows.Remove(filteredRows[i]);
+                }
+                else if (!havingClause.CheckWhereClause(filteredRows[i]))
+                {
+                    filteredRows[i].RemoveFromParent();
+                    filteredRows.Remove(filteredRows[i]);
                 }
                 else
                 {
-                    classify.ClassifyRow(rows[i]);
+                    classify.ClassifyRow(filteredRows[i]);
                 }
+                //rows = filteredRows;
+                //orderBy.OrderRows(rows[i].childRows);
             }
-            foreach(var childLevel in childLevels)
+            rows = filteredRows;
+            foreach (var childLevel in childLevels)
             {
                 childLevel.Fill();
             }
         }
-        void LoadTable(HQLTable topTbl, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
+        void LoadTable(HQLTable topTbl, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> AddRow)
         {
             indexesPerTable[topTbl.idName].ForEach(col => indexedRows.FindAddIfNotFound(col));
             foreach (IMultiRogueRow newRow in topTbl.FilterAndStreamRows(parentLvl,whereClause, AddRow))
@@ -169,6 +198,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public override string PrintDetails()
         {
             return "LevelName:" + lvlName + ",LeveNum:" + levelNum + ", ParentLevelName:" + parentLvlName;
+        }
+        public IEnumerable<string> SyntaxSuggestions()
+        {
+            return splitKeys.Select(x => x.keyTxt);
         }
     }
 }

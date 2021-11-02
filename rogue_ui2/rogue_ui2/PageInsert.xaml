@@ -24,13 +24,15 @@
                 <ScrollViewer>
                     <StackPanel>
                         <Grid>
-                            <rogue_ui2:RichTextBoxEx Height="600" Grid.Row="0" Grid.Column="0" x:Name="txtSyntax" ></rogue_ui2:RichTextBoxEx>
+                            <rogue_ui2:RichTextBoxEx Height="600" Grid.Row="0" Grid.Column="0" x:Name="txtSyntax"  ContentAssistTriggers="{Binding ContentAssistTriggers}"
+ ContentAssistSource="{Binding ContentAssistSource}" Loaded="txtSyntax_Loaded"  ></rogue_ui2:RichTextBoxEx>
                         </Grid>
                         <CheckBox x:Name="chkAutoAddWhitespace" Grid.Row="2" Content="AutoAdd White Space After Trigger"/>
                         <Button Name="btnRunQuery" Click="btnRunQuery_Click">Run Query</Button>
                         <StackPanel Name="pnlResult">
                             <TreeView Name="treResults"></TreeView>
                         </StackPanel>
+                        
                     </StackPanel>
                 </ScrollViewer>               
             </TabItem>

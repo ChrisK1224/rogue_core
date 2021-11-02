@@ -20,6 +20,7 @@ namespace rogue_core.rogueCore.install
         public static string rootPath = basePath + Path.DirectorySeparatorChar + "Pure";
         public static string sharedDataPath = rootPath + Path.DirectorySeparatorChar + "Shared";
         public static string incrementIDPath = rootPath + Path.DirectorySeparatorChar + "id.bin";
+        public static string mlModelPath = rootPath + Path.DirectorySeparatorChar + "MlModels" + Path.DirectorySeparatorChar;
         //public static String rootPath = path + Path.DirectorySeparatorChar + "wwwroot" + Path.DirectorySeparatorChar  + "MyDatabase" + Path.DirectorySeparatorChar + "Pure";
         //#elif CONFIG = "ConsoleDebug"
         //        static string path = "Y:\\RogueDatabase" + Path.DirectorySeparatorChar + "Pure";

@@ -95,7 +95,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column
             //** Shit code to handle if the encoded column value is blank
             if(colIDorName != "")
             {
-                ResetEncodedID(EncodedIDPull(colIDorName));
+                ResetEncodedID(colIDorName);
                 return parentRows.First()[colTableRefName].ITryGetValueByColumn(columnRowID);
             }
             else

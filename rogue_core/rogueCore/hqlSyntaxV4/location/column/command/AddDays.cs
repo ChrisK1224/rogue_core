@@ -15,7 +15,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
             var dt = DateTime.Parse(commandParams[0].GetValue(rows));
             int dayDiff = int.Parse(commandParams[1].GetValue(rows));
             dt = dt.AddDays(dayDiff);
-            return dt.ToString("yyyy-MM-dd");
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

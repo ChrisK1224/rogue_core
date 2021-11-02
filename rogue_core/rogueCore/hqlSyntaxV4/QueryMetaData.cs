@@ -12,17 +12,18 @@ using rogue_core.rogueCore.hqlSyntaxV4.location.from;
 using rogue_core.rogueCore.hqlSyntaxV4.group;
 using rogueCore.hqlSyntaxV4.join;
 using rogue_core.rogueCore.id;
+using rogue_core.rogueCore.hqlSyntaxV4.select;
+using rogue_core.rogueCore.binary.prefilled;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4
 {
     public class QueryMetaData
     {
         public List<HQLGroup> groups = new List<HQLGroup>();
-        List<HQLLevel> levels = new List<HQLLevel>();
+        List<IHQLLevel> levels = new List<IHQLLevel>();
         List<IQueryableDataSet> dataSets = new List<IQueryableDataSet>();
         List<HQLTable> tables = new List<HQLTable>(); 
-        List<ITempBase> allSegs = new List<ITempBase>();
-         
+        List<SplitSegment> allSegs = new List<SplitSegment>();
         int unnamedColCount = 0;
         public QueryMetaData() 
         {
@@ -30,13 +31,26 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         }
         public IEnumerable<IMultiRogueRow> TopRows()
         {
-            foreach(var lvl in groups[groups.Count - 1].topLevels)
+
+            //foreach (var row in levels[0].rows[0].childRows)
+            //{
+            //    yield return row;
+            //}
+            //*Just changed*8
+            foreach (var lvl in groups[0].topLevels)
             {
-                foreach(var row in lvl.rows)
+                foreach (var row in lvl.filteredRows)
                 {
                     yield return row;
                 }
             }
+            //foreach (var lvl in groups[groups.Count - 1].topLevels)
+            //{
+            //    foreach (var row in lvl.filteredRows)
+            //    {
+            //        yield return row;
+            //    }
+            //}
             //return groups[groups.Count-1].levels.First().rows[0].childRows;
         }
         public HQLLevel ParentLevel(string parentName)
@@ -55,28 +69,47 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         {
             return tables;
         }
+        public SelectRow BaseLevelSelectRow() 
+        {
+            return levels[1].selectRow;
+        }
+        public List<KeyValuePair<string, List<IColumnRow>>> CurrentLevelColumns()
+        {
+            var cols = new List<KeyValuePair<string, List<IColumnRow>>>();
+            var tbls = levels[levels.Count - 1].tables.Where(x => x.IsIdableFrom).ToList();
+            tbls.ForEach(x => cols.Add(new KeyValuePair<string, List<IColumnRow>>(x.idName, BinaryDataTable.columnTable.AllColumnsPerTable(x.potentialTableID))));
+            return cols;
+        }
+        public List<IColumnRow> CurrentLevelSingleTableColumns(string tableName)
+        {
+            var tbl = levels[levels.Count - 1].tables.Where(x => x is IIdableFrom && x.idName.ToUpper() == tableName.ToUpper()).First();
+            return BinaryDataTable.columnTable.AllColumnsPerTable(tbl.potentialTableID);
+        }
+        public List<IMultiRogueRow> CurrentLevelRows()
+        {
+            return levels[levels.Count - 1].rows;
+        }
         public void AddGroup(HQLGroup group)
         {
-            groups.Add(group);
-            
+            groups.Add(group);            
         }
         public HQLGroup GetGroupByName(string idName)
         {
             return this.groups.Where(x => x.idName.ToUpper() == idName.ToUpper()).FirstOrDefault();
         }
-        public int AddLevel(HQLLevel level)
+        public int AddLevel(IHQLLevel level)
         {
             dataSets.Add(level);
             levels.Add(level);
             var parentLvl = levels.Where(lvl => lvl.dataSetName == level.parentLvlName.ToUpper()).FirstOrDefault();
-            ((HQLLevel)parentLvl).AddChildLevel(level);
+            ((IHQLLevel)parentLvl).AddChildLevel(level);
             return ((HQLLevel)parentLvl).levelNum + 1;
         }
         public void AddTable(HQLTable table)
         {
             tables.Add(table);
         }        
-        public void AddSegment(ITempBase seg)
+        public void AddSegment(SplitSegment seg)
         {
             allSegs.Add(seg);
         }

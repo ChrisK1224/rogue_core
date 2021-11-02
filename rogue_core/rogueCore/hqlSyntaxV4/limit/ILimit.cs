@@ -4,7 +4,7 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.limit
 {
-    public interface ILimit
+    public interface ILimit : ITempBase
     {
         int limitRows { get; }
     }

@@ -12,6 +12,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     public abstract class SplitSegment : ITempBase
     {
         public abstract List<SplitKey> splitKeys { get; }
+        //public abstract IEnumerable<string> SyntaxSuggestions();
         string origTxt { get; }
         string modifiedTxt { get; set; }
         protected List<KeyValuePair<string, string>> splitList { get; } = new List<KeyValuePair<string, string>>();
@@ -25,12 +26,15 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
                 var replaceKeys = splitKeys.Where(x => x.replaceType != SplitKey.ReplaceTypes.none).ToList();
                 replaceKeys.ForEach(x => SetReplacements(x));
                 CreateSplitList(modifiedTxt);
+                //Initialize(metaData);
+                //SyntaxCommand = LoadSyntaxParts;
             }
             catch (Exception ex)
             {
-
+                SyntaxCommand = ErrorSyntaxParts;
             }
         }
+        //protected abstract void Initialize(QueryMetaData metaData);
         public void PrintSegment()
         {
             Console.WriteLine(this.GetType().Name + ":" + origTxt + "|" + PrintDetails());
@@ -149,5 +153,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             }
             return String.Join("|", keyStrs);
         }
+        protected Action<IMultiRogueRow, ISyntaxPartCommands> SyntaxCommand { get; set; }
+        private void ErrorSyntaxParts(IMultiRogueRow parentRow, ISyntaxPartCommands syntaxCommands)
+        {
+            syntaxCommands.GetLabel(parentRow, "&nbsp; "  + " " + origTxt + "&nbsp;", IntellsenseDecor.MyColors.red, IntellsenseDecor.Boldness.bolder, IntellsenseDecor.FontSize.regular, IntellsenseDecor.Underline.underline);
+        }
+        //public abstract void LoadSyntaxParts(IMultiRogueRow parentRow, ISyntaxPartCommands syntaxCommands);
     }
 }

@@ -14,22 +14,20 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
 {
     class InvertFrom : SplitSegment, IIdableFrom
     {
-        public bool IsIdable { get { return true; } }
-        public bool isEncoded { get { return false; } }
-        public string idName => throw new NotImplementedException();
-        public IJoinClause joinClause { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public WhereClause whereClause { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ILimit limit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string idName => throw new NotImplementedException();       
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>(); } }
-        public string defaultName => throw new NotImplementedException();
         public IORecordID tableId => throw new NotImplementedException();
         internal InvertFrom(string hqlTxt, QueryMetaData metaData) : base(hqlTxt, metaData)
         {
             //this.queryStatement = queryStatement;
         }
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
-            throw new NotImplementedException();
+            throw new Exception("NO FINDISHED");
+            //foreach (IRogueRow thsRow in parentRow.InvertRow(invertSelectRow, columns, complexWordTable))
+            //{
+            //    yield return thsRow;
+            //}
         }
         public IEnumerable<Dictionary<string, IReadOnlyRogueRow>> LoadTableRows(List<Dictionary<string, IReadOnlyRogueRow>> parentRows, ILimit limit, IJoinClause joinClause)
         {

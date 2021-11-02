@@ -10,7 +10,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group.convert
 {
     public interface IGroupConvert
     {
-        IEnumerable<IReadOnlyRogueRow> Transform(List<HQLLevel> topLevels);
+        IEnumerable<IReadOnlyRogueRow> Transform(List<IHQLLevel> topLevels);
         IORecordID tableId { get; }
     }
 }

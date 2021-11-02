@@ -68,6 +68,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
     {
         public const string with = "WITH";
         public const string withEnd = "END";
+        public const string usingTxt = "USING";
 
         public const string convert = "CONVERT";
         public const string pipe = "|";
@@ -80,6 +81,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public const string delete = "DELETE";
         public const string update = "UPDATE";
         public const string classify = "CLASSIFY";
+        public const string order = "ORDER";
+        public const string having = "HAVING";
 
         public const string where = "WHERE";
         public const string join = "JOIN";
@@ -123,8 +126,9 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public static readonly SplitKey withKey = new SplitKey(KeyNames.with, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey convertKey = new SplitKey(KeyNames.convert, SplitKey.WhiteSpaceOptions.include, false, false, true);
         public static readonly SplitKey withEndKey = new SplitKey(KeyNames.withEnd, SplitKey.WhiteSpaceOptions.include, false, true, true);
-        public static readonly SplitKey openCommand = new SplitKey(KeyNames.openParenthensis, SplitKey.WhiteSpaceOptions.none, false, false, false, KeyNames.pipe, SplitKey.ReplaceTypes.firstInstance);
-        public static readonly SplitKey closeCommand = new SplitKey(KeyNames.closeParenthesis, SplitKey.WhiteSpaceOptions.none, false, false, true, KeyNames.questionMark, SplitKey.ReplaceTypes.lastInstance);
+        
+        //public static readonly SplitKey openCommand = new SplitKey(KeyNames.openParenthensis, SplitKey.WhiteSpaceOptions.none, false, false, false, KeyNames.pipe, SplitKey.ReplaceTypes.firstInstance);
+        //public static readonly SplitKey closeCommand = new SplitKey(KeyNames.closeParenthesis, SplitKey.WhiteSpaceOptions.none, false, false, true, KeyNames.questionMark, SplitKey.ReplaceTypes.lastInstance);
     }
     public static class LevelSplitters
     {
@@ -132,10 +136,13 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public static readonly SplitKey fromKey = new SplitKey(KeyNames.from, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey selectKey = new SplitKey(KeyNames.select, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey combineKey = new SplitKey(KeyNames.combine, SplitKey.WhiteSpaceOptions.include, true, false);
+        public static readonly SplitKey CommandLevelKey = new SplitKey(KeyNames.usingTxt, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey insertKey = new SplitKey(KeyNames.insert, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey deleteKey = new SplitKey(KeyNames.delete, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey updateKey = new SplitKey(KeyNames.update, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey classifyKey = new SplitKey(KeyNames.classify, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey orderKey = new SplitKey(KeyNames.order, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey havingKey = new SplitKey(KeyNames.having, SplitKey.WhiteSpaceOptions.include, false, false);
     }
     public static class TableSplitters
     {

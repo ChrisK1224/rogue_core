@@ -18,26 +18,140 @@ namespace TestCodeRunnerTwo
     {
         static void Main(string[] args)
         {
+            if(args.Length == 1)
+            {
+                if (File.Exists(args[0])){
+                    string qryTxt = File.ReadAllText(args[0]);
+                    var qry = new HQLQuery(qryTxt);
+                    qry.Execute();
+                    qry.PrintQuery();
+                }               
+            }
+            Console.ReadKey();
+        }
+        const int megabyte = 1024 * 1024;
+        public void Run()
+        {
+            //string dtTest = @"FROM DATE_RANGE(Add_Days(CURRENT_EOD(),""-1""), ""day"", ""-1"", ""1"") as DR SELECT DR.DATE_ITEM";
+            //var dtTestq = new HQLQuery(dtTest);
+            //dtTestq.Execute();
+            //dtTestq.PrintQuery();
+            string ll = @"WITH csvTbl FROM STOCKHISTORY.CRYPTOCOMPARE.DAYINTERVAL
+                                        SELECT time, high, low, open, volumefrom, volumeto, close CONVERT CSV END
 
-            string apiQry = @"FROM DATE_RANGE(Add_Days(CURRENT_DATE(),""-1""), ""day"", ""-1"", ""1"") as DR
-               COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
-               COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR  SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.DAILY_LIMIT_NUM as Limit, ci.cryptoId AS CRYPTO_ID
-                  FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
-                      INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
-            var apiRun = new HQLQuery(apiQry);
-            apiRun.Execute();
-            apiRun.PrintQuery();
+             FROM csvTbl
+                SELECT ""HEY"" FROM ""TEST"" ";
+            string manualOneTimeHistQuery = @"FROM ""APIINFO"" SELECT ""1632315599"" AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" as DEFAULT_TABLE_NM, ""day"" as RUN_TYPE, ""44"" as Limit, ""ETH"" AS CRYPTO_ID
+                                        FROM RUN_API() as APIResult JOIN TO APIINFO SELECT DataFilePath as DataFile,Owner_Database_ID  
+                                                INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult 
+                                            SELECT INSTBL.ROGUECOLUMNID";
+
+            string recurQry = @"FROM DATE_RANGE(Add_Days(CURRENT_EOD(EPOCH_TO_DATE(""1632315599"")),""-1""), ""day"", ""-44"", ""1"") as DR  
+                                    COMBINE StockHistory.CryptoCompare.RunTypes  as rt JOIN TO DR 
+                                    COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR 
+                                    SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.DAILY_LIMIT_NUM as Limit, ci.cryptoId AS CRYPTO_ID
+                                        FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID  
+                                                INSERT INTO [{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult 
+                                            SELECT INSTBL.ROGUECOLUMNID";
+            //var dtTestq = new HQLQuery(manualOneTimeHistQuery);
+            //dtTestq.Execute();
+            //dtTestq.PrintQuery();
+            //var workingSingleCloseToPython = @"WITH csvTbl FROM StockHistory.CryptoCompare.APIRUNS  AS  close 
+            //                        COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = close.ROGUECOLUMNID 
+            //                        WHERE close.CRYPTO_ID = ""ETH"" and close.RUN_TYPE = ""day"" 
+            //                        SELECT  ch.close
+            //                        CONVERT JSON END  
+            //                            FROM csvTbl 
+            //                            SELECT  csvTbl.CSV_Path";
+            //var workingSingleCloseToPython = @"WITH csvTbl FROM StockHistory.CryptoCompare.APIRUNS  AS  close 
+            //                        COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = close.ROGUECOLUMNID 
+            //                        WHERE close.CRYPTO_ID = ""ETH"" and close.RUN_TYPE = ""day"" 
+            //                        SELECT  ch.close,EPOCH_TO_DATE(ch.time) as dt,  ch.RogueColumnID as CryptoCompareId, [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            //                        CONVERT JSON END  
+            //                            FROM csvTbl 
+            //                            SELECT  csvTbl.CSV_Path";
+            ////EPOCH_TO_DATE(ch.time) as dt,  ,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            ////**Thisis to delete rows from API Runs Table... if Needed later to void erronious runs**
+            ////string qrysDel = @"DELETE [2442827] SELECT ROGUECOLUMNID";
+            //var heyDel = new HQLQuery(workingSingleCloseToPython);
+            //heyDel.Execute();
+            //heyDel.PrintQuery();
+            //string lffl = "SDF";
+            // string apiQry = @"FROM DATE_RANGE(Add_Days(CURRENT_EOD(),""-1""), ""day"", ""-1"", ""1"") as DR
+            //// COMBINE StockHistory.CryptoCompare.RunTypes as rt JOIN TO DR
+            ////COMBINE StockHistory.CryptoCompare.CryptoIds as ci JOIN TO DR SELECT DATE_TO_EPOCH(DR.DATE_ITEM) AS To_Date, ""CRYPTOCOMPARE"" AS API_SOURCE_NM, ""CryptoHistory"" as DEFAULT_TABLE_NM, rt.run_type as RUN_TYPE, rt.DAILY_LIMIT_NUM as Limit, ci.cryptoId AS CRYPTO_ID
+            ////  FROM RUN_API() as APIResult JOIN TO DR SELECT DataFilePath as DataFile,Owner_Database_ID
+            ////      INSERT INTO[{ APIResult.Owner_Database_ID }] as INSTBL BY JSON_VALUE(APIResult.DataFilePath, APIResult.Default_Table_NM) JOIN TO APIResult SELECT INSTBL.ROGUECOLUMNID";
+            // var apiRun = new HQLQuery(apiQry);
+            // apiRun.Execute();
+            // apiRun.PrintQuery();
+            //SELECT api.CRYPTO_ID, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek,  EPOCH_TO_DATE(ch.time) as dt, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            //string mlgen = @"WITH csvTbl 
+            //                    FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+            //COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+            //WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""hour"" and LAG(""-1"", ch.close) != """"
+            //SELECT LAG(""-1"", ch.close) - ch.close as diff, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6 api.CRYPTO_ID, api.RUN_TYPE , EPOCH_TO_DATE(ch.time) as dt, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            //CONVERT CSV END
+
+            //    FROM  csvTbl 
+            //    SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""diff"", ""DayEthMl"", ""ML for trading eth based on day metric"") as modelData ";
+            //diff: LAG(""-1"", ch.close) - ch.close as diff
+            string mlgen = @"WITH csvTbl 
+                               FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+            COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+            WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+            ORDER ch.time
+            SELECT  ch.close as close, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6, LAG(""-7"", ch.close) as lagger7
+            HAVING LAG(""-1"", ch.close) != """" AND LAG(""-2"", ch.close) != """" AND LAG(""-3"", ch.close) != """" AND LAG(""-4"", ch.close) != """" AND LAG(""-5"", ch.close) != """" AND LAG(""-6"", ch.close) != """" AND LAG(""-7"", ch.close) != """"
+            CONVERT CSV END
+             
+                FROM  csvTbl 
+                SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""DayEthMl"", ""ML for trading eth based on day metric"") as modelData ";
+
+            string dataTest = @"
+FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+            COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+            WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+            ORDER ch.time
+            SELECT LAG(""-1"", ch.close) - ch.close as diff, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6, LAG(""-7"", ch.close) as lagger7, api.CRYPTO_ID, api.RUN_TYPE , EPOCH_TO_DATE(ch.time) as dt, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            HAVING LAG(""-1"", ch.close) != """" AND LAG(""-2"", ch.close) != """" AND LAG(""-3"", ch.close) != """" AND LAG(""-4"", ch.close) != """" AND LAG(""-5"", ch.close) != """" AND LAG(""-6"", ch.close) != """" AND LAG(""-7"", ch.close) != """"
+";
+            string ff = @"FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
+            COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+            WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+            ORDER ch.time
+            SELECT api.CRYPTO_ID, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek,  EPOCH_TO_DATE(ch.time) as dt, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+            HAVING LAG(""-1"", ch.close) != """"";
 
             string histQuery = @"FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
             COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
-            WHERE api.CRYPTO_ID = ""DOGE"" and api.RUN_TYPE = ""minute"" 
-            SELECT api.CRYPTO_ID, api.RUN_TYPE , EPOCH_TO_DATE(ch.time) as dt, ch.high, ch.low, ch.open, ch.volumeto, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement";
-            var hist = new HQLQuery(histQuery);
+            WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+            SELECT  DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, MONTH(EPOCH_TO_DATE(ch.time)) as Month,  LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6,  api.CRYPTO_ID, api.RUN_TYPE , ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement";
+
+            string runMLQry = @"
+            FROM StockHistory.CryptoCompare.APIRUNS AS api 
+                COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID
+                WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+                ORDER ch.time
+                SELECT LAG(""-1"", ch.close) - ch.close as diff, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6, LAG(""-7"", ch.close) as lagger7, api.CRYPTO_ID, api.RUN_TYPE , EPOCH_TO_DATE(ch.time) as dt, ch.close,  [[ch.close-ch.open]/ ch.open] * ""100"" as PercentMovement
+                HAVING LAG(""-1"", ch.close) != """" AND LAG(""-2"", ch.close) != """" AND LAG(""-3"", ch.close) != """" AND LAG(""-4"", ch.close) != """" AND LAG(""-5"", ch.close) != """" AND LAG(""-6"", ch.close) != """" AND LAG(""-7"", ch.close) != """"
+            
+            FROM RUN_ML_COMMAND(""C:\Users\chris\Documents\RogueDataBase\Pure\MlModels\2770118\SampleRegression\SampleRegression.Model\MLModel.zip"") as inst JOIN TO api
+            SELECT inst.rogueColumnId, inst.Output_Value";
+
+            string temp = @"
+ FROM StockHistory.CryptoCompare.APIRUNS AS api 
+                COMBINE StockHistory.CryptoCompare.CRYPTOHISTORY as ch JOIN ON ch.APIRUNS_OID = api.ROGUECOLUMNID 
+                WHERE api.CRYPTO_ID = ""ETH"" and api.RUN_TYPE = ""day"" 
+                ORDER ch.time
+                SELECT  ch.close as close, DAY_OF_WEEK(EPOCH_TO_DATE(ch.time)) as DayOfWeek, LAG(""-1"", ch.close) as lagger,LAG(""-2"", ch.close) as lagger2,LAG(""-3"", ch.close) as lagger3,LAG(""-4"", ch.close) as lagger4,LAG(""-5"", ch.close) as lagger5,LAG(""-6"", ch.close) as lagger6, LAG(""-7"", ch.close) as lagger7
+                HAVING LAG(""-1"", ch.close) != """" AND LAG(""-2"", ch.close) != """" AND LAG(""-3"", ch.close) != """" AND LAG(""-4"", ch.close) != """" AND LAG(""-5"", ch.close) != """" AND LAG(""-6"", ch.close) != """" AND LAG(""-7"", ch.close) != """"
+                ";
+            var hist = new HQLQuery(mlgen);
             hist.Execute();
             hist.PrintQuery();
-
             //**Thisis to delete rows from API Runs AND CRYPTOHISTORY Table... if Needed later to void erronious runs * *
-            //string qrysDel = @"DELETE STOCKHISTORY.CRYPTOCOMPARE.APIRUNS WHERE TO_DATE = ""7/31/2021 12:00:00 AM"" SELECT ROGUECOLUMNID";
+            //string qrysDel = @"DELETE STOCKHISTORY.CRYPTOCOMPARE.APIRUNi09S WHERE TO_DATE = ""7/31/2021 12:00:00 AM"" SELECT ROGUECOLUMNID";
 
             //var heyDel = new HQLQuery(qrysDel);
             //heyDel.Execute();
@@ -54,17 +168,20 @@ namespace TestCodeRunnerTwo
 
 
             //string ll = "SDF";
-            //var basicTestQuery = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
-            //                SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP, CURRENT_DATE() 
-            //                    FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
-            //                    SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
-            //                        FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
-            //                        SELECT ROGUECOLUMNID, METAROW_NAME, ""TABLE""  AS TYP
-            //                            FROM COLUMN JOIN ON COLUMN.OWNERIOITEM = TR.ROGUECOLUMNID
-            //                            SELECT COLUMNIDNAME  AS METAROW_NAME, ""COLUMN""  AS TYP ";
+            var basicTestQuery2 = @"WITH csvTbl FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
+                            SELECT ROGUECOLUMNID, METAROW_NAME, ""BUNDLE""  AS TYP, CURRENT_DATE() 
+                                FROM IORECORDS JOIN ON IORECORDS.OwnerIOItem = Bundles.ROGUECOLUMNID WHERE MetaRecordType = ""Database""
+                                SELECT ROGUECOLUMNID, METAROW_NAME, ""DATABASE""  AS TYP
+                                    FROM IORECORDS  AS TR JOIN ON TR.OwnerIOItem = IORECORDS.RogueColumnID
+                                    SELECT ROGUECOLUMNID, METAROW_NAME, ""TABLE""  AS TYP
+                                        FROM COLUMN JOIN ON COLUMN.OWNERIOITEM = TR.ROGUECOLUMNID
+                                        SELECT COLUMNIDNAME  AS METAROW_NAME, ""COLUMN""  AS TYP 
+                                       CONVERT CSV END  
+                                    FROM csvTbl 
+                SELECT  csvTbl.CSV_Path ";
             //**Thisis to delete rows from API Runs Table... if Needed later to void erronious runs**
             //string qrysDel = @"DELETE [2442827] SELECT ROGUECOLUMNID";
-            //var heyDel = new HQLQuery(qrysDel);
+            var heyDelbb = new HQLQuery(basicTestQuery2);
             //heyDel.Execute();
             //heyDel.PrintQuery();
             //var calcTest = new CalcableGroups("[\"5\" + [\"4\" - \"2\"] + \"6\"] - [\"7\"]", new QueryMetaData());
@@ -88,15 +205,15 @@ SELECT api.CRYPTO_ID, api.RUN_TYPE , di.time, di.high, di.low, di.open, di.volum
    
             
              FROM csvTbl 
-                SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""C:\Users\chris\Desktop\TestML"") ";
+                SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"") ";
 
             var testQry3 = @"with csvTbl FROM StockHistory.CryptoCompare.APIRUNS  AS  api 
 COMBINE StockHistory.CryptoCompare.DAYINTERVAL  as di JOIN ON di.APIRUNS_OID = api.ROGUECOLUMNID 
 WHERE api.CRYPTO_ID = ""ETH""
 SELECT api.CRYPTO_ID, api.RUN_TYPE , di.time, di.high, di.low, di.open, di.volumeto, di.close CONVERT CSV END 
 FROM csvTbl 
- SELECT  GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""C:\Users\chris\Desktop\TestML"") ";
-            
+ SELECT  GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"") ";
+
             // SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""Close"", ""C:\Users\chris\Desktop\TestML"") ";
 
             var testQry2 = @" FROM IORECORDS AS BUNDLES WHERE MetaRecordType = ""Bundle""
@@ -169,7 +286,7 @@ FROM csvTbl
             //)
             // UpdateModifier.ArchiveRogueInstance();
             //string epochTime = DateHelper.DateToEpoch(DateTime.Now);
-           
+
             //var qryyy = @"DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387034"" SELECT ROGUECOLUMNID
             //            DELETE IORECORDS  WHERE ROGUECOLUMNID = ""2387030"" SELECT ROGUECOLUMNID";
             //            var qryyy2 = @"DELETE [-1010] WHERE ROGUECOLUMNID = ""2442845"" SELECT ROGUECOLUMNID 
@@ -245,7 +362,7 @@ FROM csvTbl
             //    i++;
             //}
             hey.PrintQuery();
-             string lfl = "SF";
+            string lfl = "SF";
             //var emojis = "👹 in 🇯🇵";
             //var textParts = StringInfo.GetTextElementEnumerator(emojis);
             //while (textParts.MoveNext())
@@ -421,7 +538,6 @@ FROM csvTbl
             //var qry = new HumanHQLStatement("FROM SECTION_QUERY_LNK SELECT *");
             //qry.LoadRows(null);
         }
-        const int megabyte = 1024 * 1024;
         public static List<KeyValuePair<int,KeyValuePair<string,string>>> WhereSplit(string splitTxt)
         {
             const string start = "(";

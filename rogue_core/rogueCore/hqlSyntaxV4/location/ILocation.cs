@@ -7,7 +7,7 @@ using System.Text;
 
 namespace rogue_core.rogueCore.hqlSyntaxV4.location
 {
-    public interface ILocation : IPotentialParam
+    public interface ILocation : IPotentialParam, ITempBase
     {
         string PrintDetails();
         //string columnName { get; }        
