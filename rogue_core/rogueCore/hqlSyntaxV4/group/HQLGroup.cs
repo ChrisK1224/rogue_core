@@ -40,7 +40,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group
             switch (keyName)
             {
                 case KeyNames.usingTxt:
-                    return new CommandLevel(levelTxt, metaData);
+                    string commandName = levelTxt.BeforeFirstSpace();
+                    return Reflector.GetCommandInstance(commandName, levelTxt, metaData);
                 default:
                     return new HQLLevel(levelTxt, metaData);
             }

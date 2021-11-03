@@ -28,7 +28,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
         public string defaultName => throw new NotImplementedException();
         public IORecordID tableId => throw new NotImplementedException();
 
-        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, HQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
+        public IEnumerable<IMultiRogueRow> FilterAndStreamRows(ILimit limit, IJoinClause joinClause, IWhereClause whereClause, IHQLLevel parentLvl, Func<string, IReadOnlyRogueRow, IMultiRogueRow, IMultiRogueRow> NewRow)
         {
             throw new NotImplementedException();
         }

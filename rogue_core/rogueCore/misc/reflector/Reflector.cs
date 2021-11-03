@@ -1,6 +1,7 @@
 ﻿using rogue_core.rogueCore.hqlSyntaxV3.segments.locationColumn.columnTypes.command.columnCommands;
 using rogue_core.rogueCore.hqlSyntaxV4;
 using rogue_core.rogueCore.hqlSyntaxV4.group.convert;
+using rogue_core.rogueCore.hqlSyntaxV4.level;
 using rogueCore.hqlSyntaxV3.segments.locationColumn.columnTypes.command.executable;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,43 @@ namespace rogue_core.rogueCore.misc.reflector
             subclasses.ForEach(x => classKeys.Add(x.GetProperty("CodeMatchName").GetValue(x, null).ToString(), x));
             return classKeys;
         }
+        public static myType GetCommandInstance<myType>(string commandName, string hqlTxt, QueryMetaData metaData) where myType : Type
+        {
+            Type parentType = typeof(myType);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Type[] types = assembly.GetTypes();
+            List<Type> subclasses = types.Where(t => t.IsSubclassOf(parentType)).ToList();
+            Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            subclasses.ForEach(x => classKeys.Add(x.GetProperty("CodeMatchName").GetValue(x, null).ToString().ToUpper(), x));
+            Type type = typeof(myType);
+            return (myType)Activator.CreateInstance(type, new object[2] { hqlTxt, metaData });
+            //return classKeys[commandName.ToUpper()];
+        }
+        public static CommandLevel GetCommandInstance(string commandName, string hqlTxt, QueryMetaData metaData)
+        {
+            Type parentType = typeof(CommandLevel);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Type[] types = assembly.GetTypes();
+            List<Type> subclasses = types.Where(t => t.IsSubclassOf(parentType)).ToList();
+            Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            subclasses.ForEach(x => classKeys.Add(x.GetProperty("CodeMatchName").GetValue(x, null).ToString().ToUpper(), x));
+            Type type = typeof(CommandLevel);
+            return (CommandLevel)Activator.CreateInstance(type, new object[2] { hqlTxt, metaData });
+            //return classKeys[commandName.ToUpper()];
+        }
         static Dictionary<string, Type> GetGroupConvertTypes()
         {
             var type = typeof(IGroupConvert);
+            List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract).ToList();
+            Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            types.ForEach(x => classKeys.Add(x.GetProperty("codeMatchName").GetValue(x, null).ToString(), x));
+            return classKeys;
+        }
+        static Dictionary<string, Type> GetCommandTypes()
+        {
+            var type = typeof(CommandLevel);
             List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract).ToList();
@@ -48,6 +83,12 @@ namespace rogue_core.rogueCore.misc.reflector
             var grps = Reflector.groupConvertTypes;
             Type myType = grps[classNm];
             return (IGroupConvert)Activator.CreateInstance(myType, new object[2] { hqlTxt, metaData });
+        }
+        public static CommandLevel GetCommandLevelType(string classNm, string hqlTxt, string idName, QueryMetaData metaData)
+        {
+            var grps = GetCommandTypes();
+            Type myType = grps[classNm];
+            return (CommandLevel)Activator.CreateInstance(myType, new object[2] { hqlTxt, metaData });
         }
         public static object InitiateClassByName(string className)
         {

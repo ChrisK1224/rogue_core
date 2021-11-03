@@ -13,7 +13,7 @@ namespace rogueCore.hqlSyntaxV4.join
     {
         public string parentTableName { get; private set; } = "";
         public override List<SplitKey> splitKeys { get { return new List<SplitKey>(); } }
-        public IEnumerable<IMultiRogueRow> JoinRows(HQLLevel lvl, IReadOnlyRogueRow row, int rowCount)
+        public IEnumerable<IMultiRogueRow> JoinRows(IHQLLevel lvl, IReadOnlyRogueRow row, int rowCount)
         {
             for (int i = 0; i < rowCount; i++)
             {

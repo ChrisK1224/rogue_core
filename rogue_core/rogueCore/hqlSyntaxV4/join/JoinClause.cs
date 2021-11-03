@@ -51,7 +51,7 @@ namespace rogueCore.hqlSyntaxV4.join
                 //LocalSyntaxLoad = ErrorSyntaxParts; 
             }
         }
-        public IEnumerable<IMultiRogueRow> JoinRows(HQLLevel filledLevel, IReadOnlyRogueRow testRow, int currRowCount)
+        public IEnumerable<IMultiRogueRow> JoinRows(IHQLLevel filledLevel, IReadOnlyRogueRow testRow, int currRowCount)
         {
             //string test = testRow.ITryGetValueByColumn(localColumn.columnRowID);
             foreach (IMultiRogueRow row in filledLevel.indexedRows[parentColumn].TryFindReturn(testRow.ITryGetValueByColumn(localColumn.columnRowID)))

@@ -1,4 +1,5 @@
-﻿using rogue_core.rogueCore.hqlSyntaxV4.select;
+﻿using rogue_core.rogueCore.hqlSyntaxV4.location.column;
+using rogue_core.rogueCore.hqlSyntaxV4.select;
 using rogue_core.rogueCore.hqlSyntaxV4.table;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         List<HQLTable> tables { get; }
         public void Fill();
         public SelectRow selectRow { get; }
+        public Dictionary<IColumn, Dictionary<string, List<IMultiRogueRow>>> indexedRows { get; }
         public void AddChildLevel(IHQLLevel lvl);
     }
     public static class LevelExtensions
