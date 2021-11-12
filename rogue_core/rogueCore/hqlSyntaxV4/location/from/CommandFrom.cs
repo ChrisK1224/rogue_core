@@ -1,5 +1,6 @@
 ﻿using rogue_core.rogueCore.binary;
 using rogue_core.rogueCore.hqlSyntaxV4.level;
+using rogue_core.rogueCore.hqlSyntaxV4.level.command.uiCommands;
 using rogue_core.rogueCore.hqlSyntaxV4.limit;
 using rogue_core.rogueCore.hqlSyntaxV4.location;
 using rogue_core.rogueCore.hqlSyntaxV4.location.column;
@@ -73,6 +74,8 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.from
                     return new RunMLCommand(fullTxt, metaData);
                 case RowToColumn.commandNameIDConst:
                     return new RowToColumn(fullTxt, metaData);
+                case "UI_TABLE":
+                    return new UIRow(fullTxt, metaData);
                 default:
                     throw new Exception("Unknown table command");
             }

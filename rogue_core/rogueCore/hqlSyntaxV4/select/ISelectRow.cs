@@ -7,5 +7,6 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.select
     public interface ISelectRow : ITempBase
     {
         List<ISelectColumn> selectColumns { get; }
+        Dictionary<string, ISelectColumn> columnsByName { get; }
     }
 }

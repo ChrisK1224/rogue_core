@@ -76,6 +76,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
 
         public const string from = "FROM";
         public const string select = "SELECT";
+        public const string get = "GET";
         public const string combine = "COMBINE";
         public const string insert = "INSERT";
         public const string delete = "DELETE";
@@ -136,13 +137,14 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public static readonly SplitKey fromKey = new SplitKey(KeyNames.from, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey selectKey = new SplitKey(KeyNames.select, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey combineKey = new SplitKey(KeyNames.combine, SplitKey.WhiteSpaceOptions.include, true, false);
-        public static readonly SplitKey CommandLevelKey = new SplitKey(KeyNames.usingTxt, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey commandLevelKey = new SplitKey(KeyNames.usingTxt, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey insertKey = new SplitKey(KeyNames.insert, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey deleteKey = new SplitKey(KeyNames.delete, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey updateKey = new SplitKey(KeyNames.update, SplitKey.WhiteSpaceOptions.include, true, false);
         public static readonly SplitKey classifyKey = new SplitKey(KeyNames.classify, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey orderKey = new SplitKey(KeyNames.order, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey havingKey = new SplitKey(KeyNames.having, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey getKey = new SplitKey(KeyNames.get, SplitKey.WhiteSpaceOptions.include, false, false);
     }
     public static class TableSplitters
     {
@@ -157,6 +159,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         public static readonly SplitKey insertKey = new SplitKey(KeyNames.insert, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey deleteKey = new SplitKey(KeyNames.delete, SplitKey.WhiteSpaceOptions.include, false, false);
         public static readonly SplitKey updateKey = new SplitKey(KeyNames.update, SplitKey.WhiteSpaceOptions.include, false, false);
+        public static readonly SplitKey commandLevelKey = new SplitKey(KeyNames.usingTxt, SplitKey.WhiteSpaceOptions.include, false, false);
 
     }
     public static class LocationSplitters

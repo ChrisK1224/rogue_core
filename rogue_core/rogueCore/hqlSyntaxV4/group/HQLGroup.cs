@@ -17,7 +17,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group
 {
     public class HQLGroup : SplitSegment,IHqlGroup, IIdableFrom, IQueryableDataSet
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { GroupSplitters.convertKey, LevelSplitters.fromKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.updateKey, LevelSplitters.CommandLevelKey }; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { GroupSplitters.convertKey, LevelSplitters.fromKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.updateKey, LevelSplitters.commandLevelKey }; } }
         List<IHQLLevel> _levels { get; } = new List<IHQLLevel>(); 
         public List<IHQLLevel> topLevels { get { return _levels.Where(x => x.parentLvlName == "").ToList(); } }
         public IReadOnlyCollection<IHQLLevel> levels { get { return _levels; } }
@@ -40,7 +40,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.group
             switch (keyName)
             {
                 case KeyNames.usingTxt:
-                    string commandName = levelTxt.BeforeFirstSpace();
+                    string commandName = levelTxt.AfterFirstSpace().BeforeFirstKey(KeyNames.openParenthensis);
                     return Reflector.GetCommandInstance(commandName, levelTxt, metaData);
                 default:
                     return new HQLLevel(levelTxt, metaData);

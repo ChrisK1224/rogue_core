@@ -18,6 +18,11 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.select
             //columnName = base.columns[base.columns.Count - 1].columnName;
             columnName = base.name;
         }
+        public SelectColumn(string colTxt, QueryMetaData metaData, string columnName) : base(colTxt, metaData)
+        {
+            //columnName = base.columns[base.columns.Count - 1].columnName;
+            this.columnName = columnName;
+        }
         public void ResetColName(string colName)
         {
             columnName = colName;

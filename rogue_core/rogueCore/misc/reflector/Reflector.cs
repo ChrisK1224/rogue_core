@@ -42,14 +42,19 @@ namespace rogue_core.rogueCore.misc.reflector
         }
         public static CommandLevel GetCommandInstance(string commandName, string hqlTxt, QueryMetaData metaData)
         {
-            Type parentType = typeof(CommandLevel);
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Type[] types = assembly.GetTypes();
-            List<Type> subclasses = types.Where(t => t.IsSubclassOf(parentType)).ToList();
-            Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
-            subclasses.ForEach(x => classKeys.Add(x.GetProperty("CodeMatchName").GetValue(x, null).ToString().ToUpper(), x));
-            Type type = typeof(CommandLevel);
-            return (CommandLevel)Activator.CreateInstance(type, new object[2] { hqlTxt, metaData });
+            var t = typeof(CommandLevel);
+            var grps = Reflector.GetTypes(typeof(CommandLevel));
+            Type myType = grps[commandName];
+            return (CommandLevel)Activator.CreateInstance(myType, new object[2] { hqlTxt, metaData });
+
+            //Type parentType = typeof(CommandLevel);
+            //Assembly assembly = Assembly.GetExecutingAssembly();
+            //Type[] types = assembly.GetTypes();
+            //List<Type> subclasses = types.Where(t => t.IsSubclassOf(parentType)).ToList();
+            //Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            //subclasses.ForEach(x => classKeys.Add(x.GetPr operty("CodeMatchName").GetValue(x, null).ToString().ToUpper(), x));
+            //Type type = typeof(CommandLevel);
+            //return (CommandLevel)Activator.CreateInstance(type, new object[2] { hqlTxt, metaData });
             //return classKeys[commandName.ToUpper()];
         }
         static Dictionary<string, Type> GetGroupConvertTypes()
@@ -60,6 +65,16 @@ namespace rogue_core.rogueCore.misc.reflector
                 .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract).ToList();
             Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
             types.ForEach(x => classKeys.Add(x.GetProperty("codeMatchName").GetValue(x, null).ToString(), x));
+            return classKeys;
+        }
+        static Dictionary<string, Type> GetTypes(Type type)
+        {
+            //var type = typeof(T);
+            List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract).ToList();
+            Dictionary<string, Type> classKeys = new Dictionary<string, Type>();
+            types.ForEach(x => classKeys.Add(x.GetProperty("CodeMatchName").GetValue(x, null).ToString(), x));
             return classKeys;
         }
         static Dictionary<string, Type> GetCommandTypes()

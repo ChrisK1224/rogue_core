@@ -14,7 +14,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public string parentLvlName { get; }
         List<HQLTable> tables { get; }
         public void Fill();
-        public SelectRow selectRow { get; }
+        public ISelectRow selectRow { get; }
         public Dictionary<IColumn, Dictionary<string, List<IMultiRogueRow>>> indexedRows { get; }
         public void AddChildLevel(IHQLLevel lvl);
     }

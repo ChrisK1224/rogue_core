@@ -60,6 +60,7 @@ namespace rogue_ui2
         //// Using a DependencyProperty as the backing store for ContentAssistTriggers.  This enables animation, styling, binding, etc...
         //public static readonly DependencyProperty ContentAssistTriggersProperty =
         //    DependencyProperty.Register("ContentAssistTriggers", typeof(List<char>), typeof(MainWindow), new UIPropertyMetadata(new List<char>()));
+
         public PageInsert()
         {
             InitializeComponent();

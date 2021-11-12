@@ -65,17 +65,24 @@ namespace rogue_core.rogueCore.binary.prefilled
         {
             //**Poor logic for a new table that has no columns yet. Should probably add rogueColumnId automatically when table is made to prevent this
             //TODO **TODO Make table insert insert rogue colum asutomaitcally.**
+            var tempCols = AllColumnsPerTableWOIds(ioRecordID);
+            tempCols.Add(ColumnTable.rogueColumnIDRow);
+            tempCols.Add(ColumnTable.rogueDateAddedRow);
+            return tempCols;
+        }
+        public List<IColumnRow> AllColumnsPerTableWOIds(long ioRecordID)
+        {
+            //**Poor logic for a new table that has no columns yet. Should probably add rogueColumnId automatically when table is made to prevent this
+            //TODO **TODO Make table insert insert rogue colum asutomaitcally.**
             List<IColumnRow> tempCols;
             if (columns.ContainsKey(ioRecordID))
             {
-               tempCols = new List<IColumnRow>(columns[ioRecordID].Values.ToList());
+                tempCols = new List<IColumnRow>(columns[ioRecordID].Values.ToList());
             }
             else
             {
                 tempCols = new List<IColumnRow>();
             }
-            tempCols.Add(ColumnTable.rogueColumnIDRow);
-            tempCols.Add(ColumnTable.rogueDateAddedRow);
             return tempCols;
         }
         IColumnRow WriteNewColumn(long ownerIOItem, ColumnTypes col_type, string col_nm, long parentTableID = 0, string test_value = "")

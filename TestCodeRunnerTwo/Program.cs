@@ -106,7 +106,7 @@ namespace TestCodeRunnerTwo
             CONVERT CSV END
              
                 FROM  csvTbl 
-                SELECT ""HEY"", GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""DayEthMl"", ""ML for trading eth based on day metric"") as modelData ";
+                SELECT GENERATE_ML_MODEL(csvTbl.CSV_Path, ""close"", ""DayEthMl"", ""ML for trading eth based on day metric"") as modelData ";
 
             string dataTest = @"
 FROM StockHistory.CryptoCompare.APIRUNS  AS  api 

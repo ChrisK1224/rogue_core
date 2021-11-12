@@ -19,7 +19,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
 {
     public class HQLTable : SplitSegment
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { TableSplitters.whereKey, TableSplitters.limitKey, TableSplitters.joinKey, TableSplitters.combineKey, TableSplitters.fromKey, TableSplitters.insertKey, TableSplitters.deleteKey, TableSplitters.updateKey }; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { TableSplitters.whereKey, TableSplitters.limitKey, TableSplitters.joinKey, TableSplitters.combineKey, TableSplitters.fromKey, TableSplitters.insertKey, TableSplitters.deleteKey, TableSplitters.updateKey, TableSplitters.commandLevelKey }; } }
         public string idName { get { return from.idName.ToUpper(); } }
         public string parentTableName { get { return joinClause.parentTableName; } }
         public IJoinClause joinClause { private set;  get; }
@@ -43,7 +43,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.table
         protected void Initialize(QueryMetaData metaData)
         {
             metaData.AddTable(this);
-            from = ParseFromClause(splitList.Where(x => x.Key == KeyNames.from || x.Key == KeyNames.combine || x.Key == KeyNames.insert || x.Key == KeyNames.delete || x.Key == KeyNames.update).FirstOrDefault(), metaData);
+            from = ParseFromClause(splitList.Where(x => x.Key == KeyNames.from || x.Key == KeyNames.combine || x.Key == KeyNames.insert || x.Key == KeyNames.delete || x.Key == KeyNames.update || x.Key == KeyNames.usingTxt).FirstOrDefault(), metaData);
             joinClause = ParseJoinClause(splitList.Where(x => x.Key == KeyNames.join).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             limit = ParseLimitClause(splitList.Where(x => x.Key == KeyNames.limit).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
         }

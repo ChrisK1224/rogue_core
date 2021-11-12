@@ -69,7 +69,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         {
             return tables;
         }
-        public SelectRow BaseLevelSelectRow() 
+        public ISelectRow BaseLevelSelectRow() 
         {
             return levels[1].selectRow;
         }

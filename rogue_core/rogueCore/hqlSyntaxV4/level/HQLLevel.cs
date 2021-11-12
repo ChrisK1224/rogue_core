@@ -7,6 +7,7 @@ using rogue_core.rogueCore.hqlSyntaxV4.location.column;
 using rogue_core.rogueCore.hqlSyntaxV4.order;
 using rogue_core.rogueCore.hqlSyntaxV4.row;
 using rogue_core.rogueCore.hqlSyntaxV4.select;
+using rogue_core.rogueCore.hqlSyntaxV4.select.command;
 using rogue_core.rogueCore.hqlSyntaxV4.table;
 using rogue_core.rogueCore.hqlSyntaxV4.where;
 using rogueCore.hqlSyntaxV4.join;
@@ -20,7 +21,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
 {
     public class HQLLevel : SplitSegment,IHQLLevel
     {
-        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.havingKey, LevelSplitters.orderKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.CommandLevelKey}; } }
+        public override List<SplitKey> splitKeys { get { return new List<SplitKey>() { LevelSplitters.fromKey, LevelSplitters.selectKey, LevelSplitters.getKey, LevelSplitters.classifyKey, TableSplitters.whereKey, LevelSplitters.havingKey, LevelSplitters.orderKey, LevelSplitters.combineKey, LevelSplitters.insertKey, LevelSplitters.deleteKey, LevelSplitters.commandLevelKey}; } }
         public List<IMultiRogueRow> rows { get; set; } = new List<IMultiRogueRow>();
         public List<IMultiRogueRow> filteredRows { get; set; }
         public string dataSetName { get { return lvlName.ToUpper(); } }
@@ -30,7 +31,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public List<HQLTable> tables { get; } = new List<HQLTable>();
         List<IHQLLevel> childLevels = new List<IHQLLevel>();
         IHQLLevel parentLevel { get; }
-        public SelectRow selectRow { get; }
+        public ISelectRow selectRow { get; protected set; }
         public List<string> columnNames { get { return selectRow.selectColumns.Select(x => x.columnName).ToList(); } }
         IClassify classify { get; }
         IWhereClause whereClause { get; }
@@ -40,22 +41,46 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.level
         public QueryMetaData queryData { get; }
         public Dictionary<string, List<IColumn>> indexesPerTable { private get; set; } = new Dictionary<string, List<IColumn>>();
         public Dictionary<IColumn, Dictionary<string, List<IMultiRogueRow>>> indexedRows { get; set; } = new Dictionary<IColumn, Dictionary<string, List<IMultiRogueRow>>>();
-        public HQLLevel(string lvlTxt, QueryMetaData metaData) : base(lvlTxt, metaData)
+        public HQLLevel(string lvlTxt, QueryMetaData metaData, bool isCommand = false) : base(lvlTxt, metaData)
         {
             this.queryData = metaData;
-            splitList.Where(x => x.Key != KeyNames.select &&  x.Key != KeyNames.where && x.Key != KeyNames.having && x.Key != KeyNames.classify && x.Key != KeyNames.order).ToList().ForEach(x => tables.Add(new HQLTable(x.Value, metaData)));
+            this.tables = ParseTable(splitList.Where(x => x.Key != KeyNames.select && x.Key != KeyNames.get && x.Key != KeyNames.where && x.Key != KeyNames.having && x.Key != KeyNames.classify && x.Key != KeyNames.order).ToList().Select(x => x.Value).ToList(), metaData);
+                //.ForEach(x => ParseTable(x.Value, metaData));
             
             lvlName = levelTable.idName;
             parentLvlName = queryData.ParentLevel(levelTable.joinClause.parentTableName).lvlName;
             parentLevel = metaData.ParentLevel(parentLvlName);
             levelNum = metaData.AddLevel(this);
-
-            var rowTxt = splitList.Where(x => x.Key == KeyNames.select).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault();
-            selectRow = new SelectRow(rowTxt, metaData);
+            var selectPair = splitList.Where(x => x.Key == KeyNames.select || x.Key == KeyNames.get).FirstOrDefault();
+            selectRow = ParseSelectRow(selectPair.Key, selectPair.Value, metaData);
+            //selectRow = new SelectRow(rowTxt, metaData);
+            //selectRow = ParseSelectRow(rowTxt, metaData);
             classify = ParseClassifyClause(splitList.Where(x => x.Key == KeyNames.classify).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             whereClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.where).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             orderBy = ParseOrder(splitList.Where(x => x.Key == KeyNames.order).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
             havingClause = ParseWhereClause(splitList.Where(x => x.Key == KeyNames.having).Select(x => x.Value).DefaultIfEmpty("").FirstOrDefault(), metaData);
+        }
+        protected virtual List<HQLTable> ParseTable(List<string> txtLst, QueryMetaData metaData)
+        {
+            //tables.Add(new HQLTable(txt, metaData));
+            var thsTables = new List<HQLTable>();
+            foreach(string tblTxt in txtLst)
+            {
+                thsTables.Add(new HQLTable(tblTxt, metaData));
+            }
+            return thsTables;
+        }
+        protected virtual ISelectRow ParseSelectRow(string keyName, string txt, QueryMetaData metaData)
+        {
+            switch (keyName)
+            {
+                case KeyNames.select:
+                    return new SelectRow(txt, metaData);
+                case KeyNames.get:
+                    return new UITemplate(txt, metaData);
+                default:
+                    throw new Exception("Unrecognized Select Splitter:" + keyName);
+            }            
         }
         HQLLevel(QueryMetaData metaData) : base("", metaData) 
         { 

@@ -18,10 +18,10 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.row
         public List<IMultiRogueRow> childRows { get; } = new List<IMultiRogueRow>();
         public Dictionary<string, IReadOnlyRogueRow> tableRefRows { get; private set; } = new Dictionary<string, IReadOnlyRogueRow>();
         List<string> tableRefMergeIndicator = new List<string>();
-        SelectRow selectRow { get; set; }
+        ISelectRow selectRow { get; set; }
         IMultiRogueRow parentRow { get; set; }
         public string levelName { get; set; }        
-        internal MultiRogueRow(string levelName, int levelNum, IReadOnlyRogueRow firstRow, IMultiRogueRow parentRow, SelectRow selectRow)
+        internal MultiRogueRow(string levelName, int levelNum, IReadOnlyRogueRow firstRow, IMultiRogueRow parentRow, ISelectRow selectRow)
         {
             this.levelName = levelName;
             this.levelNum = levelNum;
