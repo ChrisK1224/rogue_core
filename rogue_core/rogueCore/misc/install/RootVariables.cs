@@ -17,10 +17,12 @@ namespace rogue_core.rogueCore.install
         //static string path = Environment.CurrentDirectory;
         //public static string basePath = "Y:\\RogueDatabase";
         public static string basePath = "C:\\Users\\chris\\Documents\\RogueDataBase";
+        //public static string basePath = "HQLDatabase";
         public static string rootPath = basePath + Path.DirectorySeparatorChar + "Pure";
         public static string sharedDataPath = rootPath + Path.DirectorySeparatorChar + "Shared";
         public static string incrementIDPath = rootPath + Path.DirectorySeparatorChar + "id.bin";
         public static string mlModelPath = rootPath + Path.DirectorySeparatorChar + "MlModels" + Path.DirectorySeparatorChar;
+      
         //public static String rootPath = path + Path.DirectorySeparatorChar + "wwwroot" + Path.DirectorySeparatorChar  + "MyDatabase" + Path.DirectorySeparatorChar + "Pure";
         //#elif CONFIG = "ConsoleDebug"
         //        static string path = "Y:\\RogueDatabase" + Path.DirectorySeparatorChar + "Pure";
@@ -28,8 +30,17 @@ namespace rogue_core.rogueCore.install
         //static string path = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "wwwroot";
         //static string path = "Y:\\RogueDatabase" + Path.DirectorySeparatorChar + "Pure";
         //public static String rootPath = path;
-         static string path = Environment.CurrentDirectory;
-        public static String rootPath = path + Path.DirectorySeparatorChar + "wwwroot" + Path.DirectorySeparatorChar  + "MyDatabase" + Path.DirectorySeparatorChar + "Pure";
+      public static string basePath = Environment.GetEnvironmentVariable("HOME") != null
+    ? Environment.GetEnvironmentVariable("HOME") + Path.DirectorySeparatorChar + "RogueDatabase" //It will give the file directory path post azure deployment
+    : Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + Path.DirectorySeparatorChar + "RogueDatabase";//It will give the file directory path in dev environment.
+
+        //public static string basePath = Environment.CurrentDirectory;
+        //public static String rootPath = basePath + Path.DirectorySeparatorChar  + "HQLDatabase" + Path.DirectorySeparatorChar + "Pure";
+        public static String rootPath = basePath + Path.DirectorySeparatorChar + "Pure";
+        //public static string rootPath = basePath + Path.DirectorySeparatorChar + "Pure";
+        public static string sharedDataPath = rootPath + Path.DirectorySeparatorChar + "Shared";
+        public static string incrementIDPath = rootPath + Path.DirectorySeparatorChar + "id.bin";
+        public static string mlModelPath = rootPath + Path.DirectorySeparatorChar + "MlModels" + Path.DirectorySeparatorChar;
 #endif
 
 

@@ -26,7 +26,7 @@ namespace rogue_core.rogueCore.binary.word.complex
             //else
             //{
             this.tableID = tableID;
-             filePath = RootVariables.rootPath + tableID.TableInfo().FolderPath() + Path.DirectorySeparatorChar + "complex.rogueComplex";
+            filePath = RootVariables.rootPath + tableID.TableInfo().FolderPath() + Path.DirectorySeparatorChar + "complex.rogueComplex";
             //}            
             if (!File.Exists(filePath))
                 File.Create(filePath).Close();

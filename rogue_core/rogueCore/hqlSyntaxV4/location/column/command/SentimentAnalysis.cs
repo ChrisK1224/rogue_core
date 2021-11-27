@@ -14,7 +14,7 @@ namespace rogue_core.rogueCore.hqlSyntaxV4.location.column.command
         public static string CodeMatchName { get { return "SENTIMENT_ANALYSIS"; } }
         public SentimentAnalysis(string colTxt, QueryMetaData metaData) : base(colTxt, metaData)
         {
-
+            
         }
         public string RetrieveStringValue(IEnumerable<Dictionary<string, IReadOnlyRogueRow>> rows)
         {

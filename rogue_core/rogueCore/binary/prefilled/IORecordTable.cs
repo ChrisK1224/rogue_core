@@ -333,7 +333,7 @@ namespace rogue_core.rogueCore.binary.prefilled
         }
         public string FolderPath()
         {
-            return Path.DirectorySeparatorChar.ToString() + SystemIDs.IOTableRecords.Bundles.systemBundleID.ToString() + Path.DirectorySeparatorChar.ToString() + SystemIDs.IOTableRecords.Databases.metaDatabase.ToString() + Path.DirectorySeparatorChar.ToString() + SystemIDs.IOTableRecords.Tables.SystemTables.columnTableID.ToString();
+            return Path.DirectorySeparatorChar + SystemIDs.IOTableRecords.Bundles.systemBundleID.ToString() + Path.DirectorySeparatorChar + SystemIDs.IOTableRecords.Databases.metaDatabase.ToString() + Path.DirectorySeparatorChar + SystemIDs.IOTableRecords.Tables.SystemTables.columnTableID.ToString();
         }
         public string FilePath()
         {
