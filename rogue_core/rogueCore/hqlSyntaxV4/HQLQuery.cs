@@ -3,6 +3,7 @@ using rogue_core.rogueCore.hqlSyntaxV4.group;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -47,6 +48,69 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             {
                 grp.Fill();
             }
+        }
+        public string AsJson()
+        {
+            Stopwatch TMR = new Stopwatch();
+            TMR.Start();
+            TMR.Stop();
+            string fillTim = TMR.ElapsedMilliseconds.ToString();
+            TMR.Restart();
+            string json = "{";
+            int currLevel = 0;
+            int itCount = 0;
+            TimeSpan totalGetValTime = new TimeSpan(0);
+            TimeSpan totalEndTime = new TimeSpan(0);
+            TimeSpan totalIfEndTime = new TimeSpan(0);
+            
+            Action<IMultiRogueRow> openJson = (row) => {
+                itCount++;
+                if (row.levelNum > currLevel)
+                {
+                    json += "\"" + row.levelName + "\" : [";
+                }
+                currLevel = row.levelNum;
+                json += "{";
+                Stopwatch valTmr = new Stopwatch();
+                valTmr.Start();
+                foreach (var pair in row.GetValueList())
+                {
+                    json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",";
+                    //json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\"", "\\\"").Replace("\\", "\\\\") + "\",";
+                    //json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\"", "\\\"") + "\",";
+                }
+                valTmr.Stop();
+                totalGetValTime += valTmr.Elapsed;
+                string vl = valTmr.ElapsedMilliseconds.ToString();
+            };
+            Action<IMultiRogueRow> closeJson = (row) =>
+            {
+                Stopwatch endTmr = new Stopwatch();
+                endTmr.Start();
+                json = json.Substring(0, json.Length - 1);
+                //for (int i = row.levelNum; i < currLevel; i++)
+                Stopwatch endifTmr = new Stopwatch();
+                endifTmr.Start();
+                if (row.levelNum < currLevel)
+                {
+                    json += "]";
+                }
+                endifTmr.Stop();
+                totalIfEndTime += endifTmr.Elapsed;
+                json += "},";
+                endTmr.Stop();
+                totalEndTime += endTmr.Elapsed;
+            };
+            IterateRows2(openJson, closeJson);
+            json = json.Substring(0, json.Length - 1);
+            //for (int i = 0; i < currLevel; i++)
+            //{
+            //    json += "]";
+            //}
+            json += "]}";
+            TMR.Stop();
+            string ff = TMR.ElapsedMilliseconds.ToString();
+            return json;
         }
         public IHqlGroup ParseGroup(string groupTxt)
         {
@@ -126,6 +190,18 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             }
             return stringBuild;
         }
+        //StringBuilder LoopGenJson(IMultiRogueRow topRow, int currLvl, StringBuilder stringBuild)
+        //{
+        //    foreach(var pair in topRow.GetValueList())
+        //    {
+        //        stringBuild.Append(pair)
+        //    }
+        //    foreach (var childRow in topRow.childRows)
+        //    {
+        //        LoopGenJson(childRow, currLvl, stringBuild);
+        //    }
+        //    return stringBuild;
+        //}
         //public void PrintSegments()
         //{
         //    metaData.PrintSegments();
