@@ -286,7 +286,7 @@ namespace rogue_core.rogueCore.binary.prefilled
             //string desc = baseRow.GetValueByColumn(SystemIDs.Columns.metaDescriptionID);
             //string typ = baseRow.GetValueByColumn(SystemIDs.Columns.metaRecordTypeID);
             //baseRow.PrintRow();
-            return baseRow.GetValueByColumn(SystemIDs.Columns.metaFolderPathID);
+            return baseRow.GetValueByColumn(SystemIDs.Columns.metaFolderPathID).Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         }
         public string FilePath()
         {
