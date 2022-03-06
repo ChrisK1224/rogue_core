@@ -49,33 +49,40 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
                 grp.Fill();
             }
         }
-        public string AsJson()
+        public string AsJson(bool isForUI = true)
         {
             Stopwatch TMR = new Stopwatch();
             TMR.Start();
             TMR.Stop();
             string fillTim = TMR.ElapsedMilliseconds.ToString();
             TMR.Restart();
-            string json = "{";
+            StringBuilder json = new StringBuilder();
+            json.Append("{");
             int currLevel = 0;
             int itCount = 0;
             TimeSpan totalGetValTime = new TimeSpan(0);
             TimeSpan totalEndTime = new TimeSpan(0);
-            TimeSpan totalIfEndTime = new TimeSpan(0);
-            
+            TimeSpan totalIfEndTime = new TimeSpan(0);            
             Action<IMultiRogueRow> openJson = (row) => {
                 itCount++;
                 if (row.levelNum > currLevel)
                 {
-                    json += "\"" + row.levelName + "\" : [";
+                    if (isForUI)
+                    {
+                        json.Append("\"children\" : [");
+                    }
+                    else
+                    {
+                        json.Append("\"" + row.levelName + "\" : [");
+                    }                   
                 }
                 currLevel = row.levelNum;
-                json += "{";
+                json.Append("{");
                 Stopwatch valTmr = new Stopwatch();
                 valTmr.Start();
                 foreach (var pair in row.GetValueList())
                 {
-                    json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",";
+                    json.Append("\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\",");
                     //json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\"", "\\\"").Replace("\\", "\\\\") + "\",";
                     //json += "\"" + pair.Key + "\"" + ":" + "\"" + pair.Value.Replace("\"", "\\\"") + "\",";
                 }
@@ -87,30 +94,32 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
             {
                 Stopwatch endTmr = new Stopwatch();
                 endTmr.Start();
-                json = json.Substring(0, json.Length - 1);
+                json.Length--;
+                //json = json.Substring(0, json.Length - 1);
                 //for (int i = row.levelNum; i < currLevel; i++)
                 Stopwatch endifTmr = new Stopwatch();
                 endifTmr.Start();
                 if (row.levelNum < currLevel)
                 {
-                    json += "]";
+                    json.Append("]");
                 }
                 endifTmr.Stop();
                 totalIfEndTime += endifTmr.Elapsed;
-                json += "},";
+                json.Append("},");
                 endTmr.Stop();
                 totalEndTime += endTmr.Elapsed;
             };
             IterateRows2(openJson, closeJson);
-            json = json.Substring(0, json.Length - 1);
+            json.Length--;
+            //json = json.Substring(0, json.Length - 1);
             //for (int i = 0; i < currLevel; i++)
             //{
             //    json += "]";
             //}
-            json += "]}";
+            json.Append("]}");
             TMR.Stop();
             string ff = TMR.ElapsedMilliseconds.ToString();
-            return json;
+            return json.ToString();
         }
         public IHqlGroup ParseGroup(string groupTxt)
         {
@@ -210,7 +219,6 @@ namespace rogue_core.rogueCore.hqlSyntaxV4
         {
             throw new NotImplementedException();
         }
-
         public IEnumerable<string> SyntaxSuggestions()
         {
             return splitKeys.Select(x => x.keyTxt);

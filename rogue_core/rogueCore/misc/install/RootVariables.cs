@@ -30,10 +30,11 @@ namespace rogue_core.rogueCore.install
         //static string path = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "wwwroot";
         //static string path = "Y:\\RogueDatabase" + Path.DirectorySeparatorChar + "Pure";
         //public static String rootPath = path;
-      public static string basePath = Environment.GetEnvironmentVariable("HOME") != null
-    ? Environment.GetEnvironmentVariable("HOME") + Path.DirectorySeparatorChar + "RogueDatabase" //It will give the file directory path post azure deployment
-    : Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + Path.DirectorySeparatorChar + "RogueDatabase";//It will give the file directory path in dev environment.
-
+    //  public static string basePath = Environment.GetEnvironmentVariable("HOME") != null
+    //? Environment.GetEnvironmentVariable("HOME") + Path.DirectorySeparatorChar + "RogueDatabase" //It will give the file directory path post azure deployment
+    //: Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + Path.DirectorySeparatorChar + "RogueDatabase";//It will give the file directory path in dev environment.
+        public static String basePath = "/home/RogueDatabase";
+        
         //public static string basePath = Environment.CurrentDirectory;
         //public static String rootPath = basePath + Path.DirectorySeparatorChar  + "HQLDatabase" + Path.DirectorySeparatorChar + "Pure";
         public static String rootPath = basePath + Path.DirectorySeparatorChar + "Pure";
